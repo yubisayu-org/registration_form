@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrasi Yubisayu</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrasi Yubisayu</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --blue: #2563eb; --blue-light: #eff6ff; --blue-dark: #1d4ed8;
+  --green: #16a34a; --green-light: #f0fdf4;
+  --red: #dc2626;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280;
+  --gray-700: #374151; --gray-900: #111827;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); min-height: 100vh; padding: 24px 16px 64px; }
+.wrap { max-width: 560px; margin: 0 auto; }
+
+/* Screens */
+#setup-screen  { display: flex;  flex-direction: column; gap: 16px; }
+#form-screen   { display: none;  flex-direction: column; gap: 16px; }
+#success-screen { display: none; flex-direction: column; gap: 16px; }
+
+/* Card */
+.card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+
+/* Setup */
+.setup-header { background: var(--blue); color: #fff; padding: 28px 28px 24px; }
+.setup-header .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; opacity: .75; margin-bottom: 8px; }
+.setup-header h1 { font-size: 22px; font-weight: 700; line-height: 1.3; }
+.setup-header p { font-size: 13px; opacity: .85; margin-top: 6px; line-height: 1.5; }
+.setup-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+.setup-step { display: flex; gap: 14px; align-items: flex-start; }
+.step-num { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.step-content { flex: 1; }
+.step-label { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; }
+
+/* Inputs */
+.input-field { width: 100%; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--gray-900); transition: border-color .15s, box-shadow .15s; background: #fff; }
+.input-field:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.input-field::placeholder { color: var(--gray-400); }
+.input-field.valid { border-color: var(--green); }
+
+/* Upload zone */
+.upload-zone { border: 2px dashed var(--gray-200); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all .15s; position: relative; }
+.upload-zone:hover { border-color: var(--blue); background: var(--blue-light); }
+.upload-zone.done { border-color: var(--green); background: var(--green-light); border-style: solid; }
+.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon { font-size: 24px; margin-bottom: 6px; }
+.upload-text { font-size: 13px; color: var(--gray-500); }
+.upload-text strong { color: var(--blue); }
+.upload-status { font-size: 12px; margin-top: 6px; color: var(--gray-400); min-height: 16px; }
+.upload-status.ok { color: var(--green); }
+.upload-status.err { color: var(--red); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--blue); color: #fff; width: 100%; padding: 13px; }
+.btn-primary:hover:not(:disabled) { background: var(--blue-dark); box-shadow: var(--shadow-md); }
+.btn-ghost { background: none; color: var(--blue); font-size: 13px; padding: 8px 12px; }
+.btn-ghost:hover { background: var(--blue-light); }
+.btn-nav { background: var(--blue); color: #fff; padding: 11px 28px; border-radius: 8px; }
+.btn-nav:hover:not(:disabled) { background: var(--blue-dark); }
+.btn-nav.outline { background: none; color: var(--blue); border: 1.5px solid var(--blue); }
+.btn-nav.outline:hover { background: var(--blue-light); }
+
+/* Form header */
+.form-header { padding: 28px 28px 22px; border-bottom: 1px solid var(--gray-100); }
+.form-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.form-header p { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+.form-header a { color: var(--blue); }
+
+/* Page indicator */
+.page-indicator { display: flex; align-items: center; gap: 8px; padding: 12px 28px; border-bottom: 1px solid var(--gray-100); }
+.page-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); transition: background .2s; }
+.page-dot.active { background: var(--blue); }
+.page-label { font-size: 12px; color: var(--gray-400); margin-left: 4px; }
+
+/* Progress bar */
+.progress-bar { height: 3px; background: var(--gray-100); }
+.progress-fill { height: 100%; background: var(--blue); transition: width .3s; width: 0%; }
+
+/* Form body */
+.form-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+.form-footer { padding: 0 28px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+/* Fields */
+.field-label { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 7px; }
+.required { color: var(--red); }
+.optional { font-size: 11px; color: var(--gray-400); font-weight: 400; }
+.field-desc { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; line-height: 1.5; }
+.field textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--gray-900); resize: vertical; min-height: 80px; transition: border-color .15s, box-shadow .15s; }
+.field textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+
+/* Select */
+.select-wrap { position: relative; }
+.select-wrap select { width: 100%; padding: 10px 38px 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: inherit; font-size: 13px; color: var(--gray-900); appearance: none; -webkit-appearance: none; background: #fff; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.select-wrap select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.select-wrap select:disabled { background: var(--gray-50); color: var(--gray-400); cursor: not-allowed; }
+.select-wrap::after { content: ''; position: absolute; right: 13px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--gray-400); pointer-events: none; }
+.field-hint { font-size: 11px; color: var(--gray-400); margin-top: 5px; min-height: 14px; display: flex; align-items: center; gap: 5px; }
+.field-hint.loading { color: var(--blue); }
+.spinner { width: 10px; height: 10px; border: 2px solid var(--gray-200); border-top-color: var(--blue); border-radius: 50%; animation: spin .6s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Radio */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-option { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; cursor: pointer; transition: all .15s; }
+.radio-option:hover { border-color: var(--blue); background: var(--blue-light); }
+.radio-option input[type="radio"] { accent-color: var(--blue); width: 16px; height: 16px; flex-shrink: 0; }
+.radio-option label { font-size: 13px; cursor: pointer; }
+.radio-option.selected { border-color: var(--blue); background: var(--blue-light); }
+
+/* Validation */
+.field.has-error .input-field,
+.field.has-error select,
+.field.has-error textarea { border-color: var(--red); }
+.field-error { display: none; font-size: 11px; color: var(--red); margin-top: 4px; }
+.field.has-error .field-error { display: block; }
+
+/* Section header */
+.section-header { padding: 16px 28px; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Divider */
+.divider { height: 1px; background: var(--gray-100); }
+
+/* Success */
+.success-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 48px 32px; text-align: center; }
+.success-icon { font-size: 52px; margin-bottom: 16px; }
+.success-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.success-card p { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+.success-meta { margin: 20px 0; background: var(--gray-50); border-radius: 8px; padding: 16px; font-size: 13px; text-align: left; }
+.meta-row { display: flex; gap: 8px; margin-bottom: 6px; }
+.meta-row:last-child { margin-bottom: 0; }
+.meta-label { color: var(--gray-400); min-width: 130px; }
+.meta-value { font-weight: 600; color: var(--gray-700); }
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ══ SETUP SCREEN ══════════════════════════════════════ -->
+<div id="setup-screen" style="display: flex;">
+  <div class="card">
+    <div class="setup-header">
+      <div class="eyebrow">Setup Awal</div>
+      <h1>Registrasi Yubisayu</h1>
+      <p>Lakukan setup sekali — masukkan URL Apps Script dan upload data wilayah, lalu download form siap pakai.</p>
+    </div>
+    <div class="setup-body">
+      <div class="setup-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-label">Masukkan URL Apps Script</div>
+          <input type="url" id="script-url" class="input-field valid" placeholder="https://script.google.com/macros/s/.../exec" oninput="validateUrl(this)">
+          <div style="font-size:11px;color:var(--gray-400);margin-top:5px">Deploy → Web App → Execute as: Me → Who has access: <strong>Anyone</strong></div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-label">Upload file CSV districts</div>
+          <div class="upload-zone done" id="upload-zone">
+            <input type="file" id="csv-file" accept=".csv" onchange="handleCSV(this)">
+            <div class="upload-icon" id="upload-icon">✅</div>
+            <div class="upload-text" id="upload-text"><strong>_Districts.csv</strong></div>
+            <div class="upload-status ok" id="upload-status">38 provinsi · 514 kab/kota · 7286 kecamatan</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="generate-btn" onclick="generateForm()" disabled="">⏳ Generating...</button>
+      <div style="text-align:center;font-size:12px;color:var(--gray-400)">Form yang didownload bisa dihosting di GitHub Pages — <strong>tanpa perlu login Google</strong>.</div>
+    </div>
+  </div>
+  <div style="text-align:center"><button class="btn btn-ghost" onclick="skipSetup()">Preview tanpa setup →</button></div>
+</div>
+
+<!-- ══ FORM SCREEN ════════════════════════════════════════ -->
+<div id="form-screen">
+
+  <!-- Header -->
+  <div class="card">
+    <div class="form-header">
+      <h2>Registrasi Yubisayu</h2>
+      <p>Registrasi cukup SATU KALI saja, bila sudah pernah JANGAN isi lagi (kecuali ada PERUBAHAN alamat). Dengan mengisi form ini, artinya sudah membaca tata cara pemesanan serta syarat dan ketentuan berlaku (dapat diakses di <a href="https://desty.page/yubisayu.id" target="_blank">https://desty.page/yubisayu.id</a>).</p>
+    </div>
+    <div class="page-indicator" id="page-indicator">
+      <div class="page-dot active" id="dot-0"></div>
+      <div class="page-dot" id="dot-1"></div>
+      <span class="page-label" id="page-label">Halaman 1 dari 2</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div id="page-1" class="card">
+    <div class="form-body">
+
+      <!-- User Instagram -->
+      <div class="field" id="f-instagram">
+        <div class="field-label">User Instagram <span class="required">*</span></div>
+        <div class="field-desc">Username-nya saja, TANPA symbol @</div>
+        <input type="text" id="inp-instagram" class="input-field" placeholder="contoh: yubisayu" oninput="updateProgress()">
+        <div class="field-error">User Instagram wajib diisi.</div>
+      </div>
+
+      <!-- Nama Depan -->
+      <div class="field" id="f-namadepan">
+        <div class="field-label">Nama Depan <span class="required">*</span></div>
+        <div class="field-desc">Nama depan penerima.</div>
+        <input type="text" id="inp-namadepan" class="input-field" placeholder="Nama depan" oninput="updateProgress()">
+        <div class="field-error">Nama Depan wajib diisi.</div>
+      </div>
+
+      <!-- Nama Belakang -->
+      <div class="field" id="f-namabelakang">
+        <div class="field-label">Nama Belakang <span class="optional">(opsional)</span></div>
+        <div class="field-desc">Nama belakang penerima.</div>
+        <input type="text" id="inp-namabelakang" class="input-field" placeholder="Nama belakang">
+      </div>
+
+      <!-- Email -->
+      <div class="field" id="f-email">
+        <div class="field-label">Email <span class="optional">(opsional)</span></div>
+        <input type="email" id="inp-email" class="input-field" placeholder="email@contoh.com">
+      </div>
+
+      <!-- Nomor Ponsel -->
+      <div class="field" id="f-ponsel">
+        <div class="field-label">Nomor Ponsel <span class="required">*</span></div>
+        <div class="field-desc">Invoice akan dikirim melalui DM Instagram atau Whatsapp, mohon isi dengan benar. Awali dengan <em>country code</em>, misal country code Indonesia adalah 62, jadi yang benar adalah 6281112139111, bukan 081112139111.</div>
+        <input type="tel" id="inp-ponsel" class="input-field" placeholder="628xxxxxxxxxx" oninput="updateProgress()">
+        <div class="field-error">Nomor Ponsel wajib diisi dan harus diawali country code.</div>
+      </div>
+
+    </div>
+    <div class="divider"></div>
+    <div class="form-footer">
+      <div></div>
+      <button class="btn btn-nav" onclick="goToPage2()">Lanjut →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div id="page-2" class="card" style="display:none">
+    <div class="section-header">Alamat Pengiriman</div>
+    <div class="form-body">
+
+      <!-- Alamat Lengkap -->
+      <div class="field" id="f-alamat">
+        <div class="field-label">Alamat Pengiriman <span class="required">*</span></div>
+        <div class="field-desc">Alamat lengkap, termasuk nama komplek (jika ada), nama jalan, blok, serta nomor rumah.</div>
+        <textarea id="inp-alamat" placeholder="Contoh: Jl. Merdeka No. 10, Komplek Permata Blok A3"></textarea>
+        <div class="field-error">Alamat wajib diisi.</div>
+      </div>
+
+      <!-- Jalan -->
+      <div class="field" id="f-jalan">
+        <div class="field-label">Jalan <span class="required">*</span></div>
+        <input type="text" id="inp-jalan" class="input-field" placeholder="Nama jalan">
+        <div class="field-error">Jalan wajib diisi.</div>
+      </div>
+
+      <!-- Provinsi (dropdown — cascading level 1) -->
+      <div class="field" id="f-provinsi">
+        <div class="field-label">Provinsi <span class="required">*</span></div>
+        <div class="select-wrap">
+          <select id="sel-provinsi" onchange="onProvinsiChange(this.value)">
+            <option value="">Pilih Provinsi</option>
+          </select>
+        </div>
+        <div class="field-hint" id="hint-provinsi"></div>
+        <div class="field-error">Provinsi wajib dipilih.</div>
+      </div>
+
+      <!-- Kabupaten/Kota (dropdown — cascading level 2) -->
+      <div class="field" id="f-kota">
+        <div class="field-label">Kabupaten / Kota <span class="required">*</span></div>
+        <div class="select-wrap">
+          <select id="sel-kota" onchange="onKotaChange(this.value)" disabled="">
+            <option value="">Pilih Kabupaten/Kota</option>
+          </select>
+        </div>
+        <div class="field-hint" id="hint-kota">Pilih provinsi terlebih dahulu</div>
+        <div class="field-error">Kabupaten/Kota wajib dipilih.</div>
+      </div>
+
+      <!-- Kecamatan (dropdown — cascading level 3) -->
+      <div class="field" id="f-kecamatan">
+        <div class="field-label">Kecamatan <span class="required">*</span></div>
+        <div class="field-desc">Tolong diisi KECAMATAN saja, bukan kelurahan. Untuk menghitung ongkos kirim, data yang diinput adalah KECAMATAN, jadi mohon diisi dengan benar.</div>
+        <div class="select-wrap">
+          <select id="sel-kecamatan" disabled="">
+            <option value="">Pilih Kecamatan</option>
+          </select>
+        </div>
+        <div class="field-hint" id="hint-kecamatan">Pilih kabupaten/kota terlebih dahulu</div>
+        <div class="field-error">Kecamatan wajib dipilih.</div>
+      </div>
+
+      <!-- Kode Pos -->
+      <div class="field" id="f-kodepos">
+        <div class="field-label">Kode Pos <span class="required">*</span></div>
+        <input type="text" id="inp-kodepos" class="input-field" placeholder="Kode pos">
+        <div class="field-error">Kode Pos wajib diisi.</div>
+      </div>
+
+      <!-- Preferensi Ekspedisi -->
+      <div class="field" id="f-ekspedisi">
+        <div class="field-label">Preferensi Ekspedisi <span class="required">*</span></div>
+        <div class="radio-group">
+          <div class="radio-option" onclick="selectEkspedisi('JNE - REG', this)">
+            <input type="radio" name="ekspedisi" id="exp-jne" value="JNE - REG">
+            <label for="exp-jne">JNE - REG</label>
+          </div>
+        </div>
+        <div class="field-error">Preferensi ekspedisi wajib dipilih.</div>
+      </div>
+
+    </div>
+    <div class="divider"></div>
+    <div class="form-footer">
+      <button class="btn btn-nav outline" onclick="goToPage1()">← Kembali</button>
+      <button class="btn btn-nav" id="submit-btn" onclick="submitForm()">Kirim</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ SUCCESS SCREEN ════════════════════════════════════ -->
+<div id="success-screen">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <h2>Registrasi Berhasil!</h2>
+    <p>Terima kasih! Berikut link group telegramnya (bisa untuk tanya harga atau live shopping) <a href="https://t.me/joinchat/Rvaq996Pqkg3YTk1" target="_blank">https://t.me/joinchat/Rvaq996Pqkg3YTk1</a></p>
+    <div class="success-meta" id="success-meta"></div>
+    <button class="btn btn-primary" style="margin-top:20px" onclick="resetToForm()">Isi registrasi lain</button>
+  </div>
+</div>
+
+</div><!-- end .wrap -->
+
+
+
+
+
+<script>
+
+// ═══════════════════════════════════════════════════════════
+// DATA — injected by setup wizard
+// ═══════════════════════════════════════════════════════════
+var DISTRICTS_DATA = {"ACEH":{"KAB. ACEH BARAT":["ARONGAN LAMBALEK","BUBON","JOHAN PAHLAWAN","KAWAY XVI","MEUREUBO","PANTE CEUREUMEN","PANTON REU","SAMATIGA","SUNGAI MAS","WOYLA","WOYLA BARAT","WOYLA TIMUR"],"KAB. ACEH BARAT DAYA":["BABAH ROT","BLANG PIDIE","JEUMPA","KUALA BATEE","LEMBAH SABIL","MANGGENG","SETIA","SUSOH","TANGAN-TANGAN"],"KAB. ACEH BESAR":["BAITUSSALAM","BLANG BINTANG","DARUL IMARAH","DARUL KAMAL","DARUSSALAM","INDRAPURI","INGIN JAYA","KOTA JANTHO","KRUENG BARONA JAYA","KUTA BARO","KUTA COT GLIE","KUTA MALAKA","LEMBAH SEULAWAH","LEUPUNG","LHOKNGA","LHOONG","MESJID RAYA","MONTASIK","PEUKAN BADA","PULO ACEH","SEULIMEUM","SIMPANG TIGA","SUKA MAKMUR"],"KAB. ACEH JAYA":["DARUL HIKMAH","INDRA JAYA","JAYA","KRUENG SABEE","PANGA","PASIE RAYA","SAMPOINIET","SETIA BAKTI","TEUNOM"],"KAB. ACEH SELATAN":["BAKONGAN","BAKONGAN TIMUR","KLUET SELATAN","KLUET TENGAH","KLUET TIMUR","KLUET UTARA","KOTA BAHAGIA","LABUHAN HAJI","LABUHAN HAJI BARAT","LABUHAN HAJI TIMUR","MEUKEK","PASIE RAJA","SAMA DUA","SAWANG","TAPAK TUAN","TRUMON","TRUMON TENGAH","TRUMON TIMUR"],"KAB. ACEH SINGKIL":["DANAU PARIS","GUNUNG MERIAH","KOTA BAHARU","KUALA BARU","PULAU BANYAK","PULAU BANYAK BARAT","SIMPANG KANAN","SINGKIL","SINGKIL UTARA","SINGKOHOR","SURO"],"KAB. ACEH TAMIANG":["BANDA MULIA","BANDAR PUSAKA","BENDAHARA","KARANG BARU","KEJURUAN MUDA","KOTA KUALASIMPANG","MANYAK PAYED","RANTAU","SEKERAK","SERUWAY","TAMIANG HULU","TENGGULUN"],"KAB. ACEH TENGAH":["ATU LINTANG","BEBESEN","BIES","BINTANG","CELALA","JAGONG JEGET","KEBAYAKAN","KETOL","KUTE PANANG","LINGE","LUT TAWAR","PEGASING","RUSIP ANTARA","SILIH NARA"],"KAB. ACEH TENGGARA":["BABUL MAKMUR","BABUL RAHMAH","BABUSSALAM","BADAR","BAMBEL","BUKIT TUSAM","DARUL HASANAH","DELENG POKHKISEN","KETAMBE","LAWE ALAS","LAWE BULAN","LAWE SIGALA-GALA","LAWE SUMUR","LEUSER","SEMADAM","TANOH ALAS"],"KAB. ACEH TIMUR":["BANDA ALAM","BIREM BAYEUN","DARUL AMAN","DARUL FALAH","DARUL IHSAN","IDI RAYEUK","IDI TIMUR","IDI TUNONG","INDRA MAKMUR","JULOK","MADAT","NURUSSALAM","PANTE BIDARI","PEUDAWA","PEUNARON","PEUREULAK","PEUREULAK BARAT","PEUREULAK TIMUR","RANTAU SELAMAT","RANTO PEUREULAK","SERBA JADI","SIMPANG JERNIH","SIMPANG ULIM","SUNGAI RAYA"],"KAB. ACEH UTARA":["BAKTIYA","BAKTIYA BARAT","BANDA BARO","COT GIREK","DEWANTARA","GEUREUDONG PASE","KUTA MAKMUR","LANGKAHAN","LAPANG","LHOKSUKON","MATANGKULI","MEURAH MULIA","MUARA BATU","NIBONG","NISAM","NISAM ANTARA","PAYA BAKONG","PIRAK TIMU","SAMUDERA","SAWANG","SEUNUDDON","SIMPANG KERAMAT","SYAMTALIRA ARON","SYAMTALIRA BAYU","TANAH JAMBO AYE","TANAH LUAS","TANAH PASIR"],"KAB. BENER MERIAH":["BANDAR","BENER KELIPAH","BUKIT","GAJAH PUTIH","MESIDAH","PERMATA","PINTU RIME GAYO","SYIAH UTAMA","TIMANG GAJAH","WIH PESAM"],"KAB. BIREUEN":["GANDA PURA","JANGKA","JEUMPA","JEUNIEB","JULI","KOTA JUANG","KUALA","KUTA BLANG","MAKMUR","PANDRAH","PEUDADA","PEULIMBANG","PEUSANGAN","PEUSANGAN SELATAN","PEUSANGAN SIBLAH KRUENG","SAMALANGA","SIMPANG MAMPLAM"],"KAB. GAYO LUES":["BLANG JERANGO","BLANG PEGAYON","BLANGKEJEREN","DABUN GELANG","KUTA PANJANG","PANTAN CUACA","PINING","PUTRI BETUNG","RIKIT GAIB","TERANGUN","TRIPE JAYA"],"KAB. NAGAN RAYA":["BEUTONG","BEUTONG ATEUH BANGGALANG","DARUL MAKMUR","KUALA","KUALA PESISIR","SEUNAGAN","SEUNAGAN TIMUR","SUKA MAKMUE","TADU RAYA","TRIPA MAKMUR"],"KAB. PIDIE":["BATEE","DELIMA","GEUMPANG","GLUMPANG BARO","GLUMPANG TIGA","GRONG GRONG","INDRAJAYA","KEMBANG TANJONG","KEUMALA","KOTA SIGLI","MANE","MILA","MUARA TIGA","MUTIARA","MUTIARA TIMUR","PADANG TIJI","PEUKAN BARO","PIDIE","SAKTI","SIMPANG TIGA","TANGSE","TIRO/TRUSEB","TITEUE"],"KAB. PIDIE JAYA":["BANDAR BARU","BANDAR DUA","JANGKA BUYA","MEURAH DUA","MEUREUDU","PANTERAJA","TRIENGGADENG","ULIM"],"KAB. SIMEULUE":["ALAFAN","SALANG","SIMEULUE BARAT","SIMEULUE CUT","SIMEULUE TENGAH","SIMEULUE TIMUR","TELUK DALAM","TEUPAH BARAT","TEUPAH SELATAN","TEUPAH TENGAH"],"KOTA BANDA ACEH":["BAITURRAHMAN","BANDA RAYA","JAYA BARU","KUTA ALAM","KUTA RAJA","LUENG BATA","MEURAXA","SYIAH KUALA","ULEE KARENG"],"KOTA LANGSA":["LANGSA BARAT","LANGSA BARO","LANGSA KOTA","LANGSA LAMA","LANGSA TIMUR"],"KOTA LHOKSEUMAWE":["BANDA SAKTI","BLANG MANGAT","MUARA DUA","MUARA SATU"],"KOTA SABANG":["SUKAJAYA","SUKAKARYA","SUKAMAKMUE"],"KOTA SUBULUSSALAM":["LONGKIB","PENANGGALAN","RUNDENG","SIMPANG KIRI","SULTAN DAULAT"]},"BALI":{"KAB. BADUNG":["ABIANSEMAL","KUTA","KUTA SELATAN","KUTA UTARA","MENGWI","PETANG"],"KAB. BANGLI":["BANGLI","KINTAMANI","SUSUT","TEMBUKU"],"KAB. BULELENG":["BANJAR","BULELENG","BUSUNGBIU","GEROKGAK","KUBUTAMBAHAN","SAWAN","SERIRIT","SUKASADA","TEJAKULA"],"KAB. GIANYAR":["BLAHBATUH","GIANYAR","PAYANGAN","SUKAWATI","TAMPAKSIRING","TEGALLALANG","UBUD"],"KAB. JEMBRANA":["JEMBRANA","MELAYA","MENDOYO","NEGARA","PEKUTATAN"],"KAB. KARANGASEM":["ABANG","BEBANDEM","KARANGASEM","KUBU","MANGGIS","RENDANG","SELAT","SIDEMEN"],"KAB. KLUNGKUNG":["BANJARANGKAN","DAWAN","KLUNGKUNG","NUSAPENIDA"],"KAB. TABANAN":["BATURITI","KEDIRI","KERAMBITAN","MARGA","PENEBEL","PUPUAN","SELEMADEG","SELEMADEG BARAT","SELEMADEG TIMUR","TABANAN"],"KOTA DENPASAR":["DENPASAR BARAT","DENPASAR SELATAN","DENPASAR TIMUR","DENPASAR UTARA"]},"BANTEN":{"KAB. LEBAK":["BANJARSARI","BAYAH","BOJONGMANIK","CIBADAK","CIBEBER","CIGEMBLONG","CIHARA","CIJAKU","CIKULUR","CILELES","CILOGRANG","CIMARGA","CIPANAS","CIRINTEN","CURUGBITUNG","GUNUNG KENCANA","KALANGANYAR","LEBAKGEDONG","LEUWIDAMAR","MAJA","MALINGPING","MUNCANG","PANGGARANGAN","RANGKASBITUNG","SAJIRA","SOBANG","WANASALAM","WARUNGGUNUNG"],"KAB. PANDEGLANG":["ANGSANA","BANJAR","BOJONG","CADASARI","CARITA","CIBALIUNG","CIBITUNG","CIGEULIS","CIKEDAL","CIKEUSIK","CIMANGGU","CIMANUK","CIPEUCANG","CISATA","JIPUT","KADUHEJO","KARANGTANJUNG","KORONCONG","LABUAN","MAJASARI","MANDALAWANGI","MEKARJAYA","MENES","MUNJUL","PAGELARAN","PANDEGLANG","PANIMBANG","PATIA","PICUNG","PULOSARI","SAKETI","SINDANGRESMI","SOBANG","SUKARESMI","SUMUR"],"KAB. SERANG":["ANYAR","BANDUNG","BAROS","BINUANG","BOJONEGARA","CARENANG","CIKANDE","CIKEUSAL","CINANGKA","CIOMAS","CIRUAS","GUNUNG SARI","JAWILAN","KIBIN","KOPO","KRAGILAN","KRAMATWATU","LEBAK WANGI","MANCAK","PABUARAN","PADARINCANG","PAMARAYAN","PETIR","PONTANG","PULO AMPEL","TANARA","TIRTAYASA","TUNJUNG TEJA","WARINGINKURUNG"],"KAB. TANGERANG":["BALARAJA","CIKUPA","CISAUK","CISOKA","CURUG","GUNUNG KALER","JAMBE","JAYANTI","KELAPA DUA","KEMIRI","KOSAMBI","KRESEK","KRONJO","LEGOK","MAUK","MEKAR BARU","PAGEDANGAN","PAKUHAJI","PANONGAN","PASARKEMIS","RAJEG","SEPATAN","SEPATAN TIMUR","SINDANG JAYA","SOLEAR","SUKADIRI","SUKAMULYA","TELUKNAGA","TIGARAKSA"],"KOTA CILEGON":["CIBEBER","CILEGON","CITANGKIL","CIWANDAN","GROGOL","JOMBANG","PULOMERAK","PURWAKARTA"],"KOTA SERANG":["CIPOCOK JAYA","CURUG","KASEMEN","SERANG","TAKTAKAN","WALANTAKA"],"KOTA TANGERANG":["BATUCEPER","BENDA","CIBODAS","CILEDUG","CIPONDOH","JATI UWUNG","KARANG TENGAH","KARAWACI","LARANGAN","NEGLASARI","PERIUK","PINANG","TANGERANG"],"KOTA TANGERANG SELATAN":["CIPUTAT","CIPUTAT TIMUR","PAMULANG","PONDOK AREN","SERPONG","SERPONG UTARA","SETU"]},"BENGKULU":{"KAB. BENGKULU SELATAN":["AIR NIPIS","BUNGA MAS","KEDURANG","KEDURANG ILIR","KOTA MANNA","MANNA","PASAR MANNA","PINO","PINORAYA","SEGINIM","ULU MANNA"],"KAB. BENGKULU TENGAH":["BANG HAJI","KARANG TINGGI","MERIGI KELINDANG","MERIGI SAKTI","PAGAR JATI","PEMATANG TIGA","PONDOK KELAPA","PONDOK KUBANG","SEMIDANG LAGAN","TABA PENANJUNG","TALANG EMPAT"],"KAB. BENGKULU UTARA":["AIR BESI","AIR NAPAL","AIR PADANG","ARMA JAYA","BATIK NAU","ENGGANO","GIRI MULYA","HULU PALIK","KERKAP","KETAHUN","KOTA ARGA MAKMUR","LAIS","MARGA SAKTI SEBELAT","NAPAL PUTIH","PADANG JAYA","PINANG RAYA","PUTRI HIJAU","TANJUNG AGUNG PALIK","ULOK KUPAI"],"KAB. KAUR":["KAUR SELATAN","KAUR TENGAH","KAUR UTARA","KELAM TENGAH","KINAL","LUAS","LUNGKANG KULE","MAJE","MUARA SAHUNG","NASAL","PADANG GUCI HILIR","PADANG GUCI HULU","SEMIDANG GUMAY","TANJUNG KEMUNING","TETAP"],"KAB. KEPAHIANG":["BERMANI ILIR","KABA WETAN","KEPAHIANG","MERIGI","MUARA KEMUMU","SEBERANG MUSI","TEBAT KARAI","UJAN MAS"],"KAB. LEBONG":["AMEN","BINGIN KUNING","LEBONG ATAS","LEBONG SAKTI","LEBONG SELATAN","LEBONG TENGAH","LEBONG UTARA","PINANG BELAPIS","RIMBO PENGADANG","TOPOS","TUBEI","URAM JAYA"],"KAB. MUKO MUKO":["AIR DIKIT","AIR MANJUNTO","AIR RAMI","IPUH","KOTA MUKOMUKO","LUBUK PINANG","MALIN DEMAN","PENARIK","PONDOK SUGUH","SELAGAN RAYA","SUNGAI RUMBAI","TERAMANG JAYA","TERAS TERUNJAM","V KOTO","XIV KOTO"],"KAB. REJANG LEBONG":["BERMANI ULU","BERMANI ULU RAYA","BINDU RIANG","CURUP","CURUP SELATAN","CURUP TENGAH","CURUP TIMUR","CURUP UTARA","KOTA PADANG","PADANG ULAK TANDING","SELUPU REJANG","SINDANG BELITI ILIR","SINDANG BELITI ULU","SINDANG DATARAN","SINDANG KELINGI"],"KAB. SELUMA":["AIR PERIUKAN","ILIR TALO","LUBUK SANDI","SELUMA","SELUMA BARAT","SELUMA SELATAN","SELUMA TIMUR","SELUMA UTARA","SEMIDANG ALAS","SEMIDANG ALAS MARAS","SUKARAJA","TALO","TALO KECIL","ULU TALO"],"KOTA BENGKULU":["GADING CEMPAKA","KAMPUNG MELAYU","MUARA BANGKA HULU","RATU AGUNG","RATU SAMBAN","SELEBAR","SINGARAN PATI","SUNGAI SERUT","TELUK SEGARA"]},"DI YOGYAKARTA":{"KAB. BANTUL":["BAMBANG LIPURO","BANGUNTAPAN","BANTUL","DLINGO","IMOGIRI","JETIS","KASIHAN","KRETEK","PAJANGAN","PANDAK","PIYUNGAN","PLERET","PUNDONG","SANDEN","SEDAYU","SEWON","SRANDAKAN"],"KAB. GUNUNGKIDUL":["GEDANGSARI","GIRISUBO","KARANGMOJO","NGAWEN","NGLIPAR","PALIYAN","PANGGANG","PATUK","PLAYEN","PONJONG","PURWOSARI","RONGKOP","SAPTOSARI","SEMANU","SEMIN","TANJUNGSARI","TEPUS","WONOSARI"],"KAB. KULON PROGO":["GALUR","GIRIMULYO","KALIBAWANG","KOKAP","LENDAH","NANGGULAN","PANJATAN","PENGASIH","SAMIGALUH","SENTOLO","TEMON","WATES"],"KAB. SLEMAN":["BERBAH","CANGKRINGAN","DEPOK","GAMPING","GODEAN","KALASAN","MINGGIR","MLATI","MOYUDAN","NGAGLIK","NGEMPLAK","PAKEM","PRAMBANAN","SEYEGAN","SLEMAN","TEMPEL","TURI"],"KOTA YOGYAKARTA":["DANUREJAN","GEDONG TENGEN","GONDOKUSUMAN","GONDOMANAN","JETIS","KOTAGEDE","KRATON","MANTRIJERON","MERGANGSAN","NGAMPILAN","PAKUALAMAN","TEGALREJO","UMBULHARJO","WIROBRAJAN"]},"DKI JAKARTA":{"KAB. ADM. KEP. SERIBU":["KEPULAUAN SERIBU SELATAN","KEPULAUAN SERIBU UTARA"],"KOTA ADM. JAKARTA BARAT":["CENGKARENG","GROGOL PETAMBURAN","KALI DERES","KEBON JERUK","KEMBANGAN","PALMERAH","TAMAN SARI","TAMBORA"],"KOTA ADM. JAKARTA PUSAT":["CEMPAKA PUTIH","GAMBIR","JOHAR BARU","KEMAYORAN","MENTENG","SAWAH BESAR","SENEN","TANAH ABANG"],"KOTA ADM. JAKARTA SELATAN":["CILANDAK","JAGAKARSA","KEBAYORAN BARU","KEBAYORAN LAMA","MAMPANG PRAPATAN","PANCORAN","PASAR MINGGU","PESANGGRAHAN","SETIA BUDI","TEBET"],"KOTA ADM. JAKARTA TIMUR":["CAKUNG","CIPAYUNG","CIRACAS","DUREN SAWIT","JATINEGARA","KRAMAT JATI","MAKASAR","MATRAMAN","PASAR REBO","PULO GADUNG"],"KOTA ADM. JAKARTA UTARA":["CILINCING","KELAPA GADING","KOJA","PADEMANGAN","PENJARINGAN","TANJUNG PRIOK"]},"GORONTALO":{"KAB. BOALEMO":["BOTUMOITO","DULUPI","MANANGGU","PAGUYAMAN","PAGUYAMAN PANTAI","TILAMUTA","WONOSARI"],"KAB. BONE BOLANGO":["BONE","BONE RAYA","BONEPANTAI","BOTU PINGGE","BULANGO SELATAN","BULANGO TIMUR","BULANGO ULU","BULANGO UTARA","BULAWA","KABILA","KABILA BONE","PINOGU","SUWAWA","SUWAWA SELATAN","SUWAWA TENGAH","SUWAWA TIMUR","TAPA","TILONGKABILA"],"KAB. GORONTALO":["ASPARAGA","BATUDAA","BATUDAA PANTAI","BILATO","BILUHU","BOLIYOHUTO","BONGOMEME","DUNGALIYO","LIMBOTO","LIMBOTO BARAT","MOOTILANGO","PULUBALA","TABONGO","TELAGA","TELAGA BIRU","TELAGA JAYA","TIBAWA","TILANGO","TOLANGOHULA"],"KAB. GORONTALO UTARA":["ANGGREK","ATINGGOLA","BIAU","GENTUMA RAYA","KWANDANG","MONANO","PONELO KEPULAUAN","SUMALATA","SUMALATA TIMUR","TOLINGGULA","TOMILITO"],"KAB. POHUWATO":["BUNTULIA","DENGILO","DUHIADAA","LEMITO","MARISA","PAGUAT","PATILANGGIO","POPAYATO","POPAYATO BARAT","POPAYATO TIMUR","RANDANGAN","TALUDITI","WANGGARASI"],"KOTA GORONTALO":["DUMBO RAYA","DUNGINGI","HULONTHALANGI","KOTA BARAT","KOTA SELATAN","KOTA TENGAH","KOTA TIMUR","KOTA UTARA","SIPATANA"]},"JAMBI":{"KAB. BATANGHARI":["BAJUBANG","BATIN XXIV","MARO SEBO ILIR","MARO SEBO ULU","MERSAM","MUARA BULIAN","MUARA TEMBESI","PEMAYUNG"],"KAB. BUNGO":["BATHIN II BABEKO","BATHIN II PELAYANG","BATHIN III","BATHIN III ULU","BUNGO DANI","JUJUHAN","JUJUHAN ILIR","LIMBUR LUBUK MENGKUANG","MUKO-MUKO BATHIN VII","PASAR MUARA BUNGO","PELEPAT","PELEPAT ILIR","RANTAU PANDAN","RIMBO TENGAH","TANAH SEPENGGAL","TANAH SEPENGGAL LINTAS","TANAH TUMBUH"],"KAB. KERINCI":["AIR HANGAT","AIR HANGAT BARAT","AIR HANGAT TIMUR","BATANG MERANGIN","BUKIT KERMAN","DANAU KERINCI","DANAU KERINCI BARAT","DEPATI VII","GUNUNG KERINCI","GUNUNG RAYA","GUNUNG TUJUH","KAYU ARO","KAYU ARO BARAT","KELILING DANAU","SITINJAU LAUT","SIULAK","SIULAK MUKAI","TANAH COGOK"],"KAB. MERANGIN":["BANGKO","BANGKO BARAT","BATANG MASUMAI","JANGKAT","JANGKAT TIMUR","LEMBAH MASURAI","MARGO TABIR","MUARA SIAU","NALO TANTAN","PAMENANG","PAMENANG BARAT","PAMENANG SELATAN","PANGKALAN JAMBU","RENAH PAMENANG","RENAH PEMBARAP","SUNGAI MANAU","TABIR","TABIR BARAT","TABIR ILIR","TABIR LINTAS","TABIR SELATAN","TABIR TIMUR","TABIR ULU","TIANG PUMPUNG"],"KAB. MUARO JAMBI":["BAHAR SELATAN","BAHAR UTARA","JAMBI LUAR KOTA","KUMPEH","KUMPEH ULU","MARO SEBO","MESTONG","SEKERNAN","SUNGAI BAHAR","SUNGAI GELAM","TAMAN RAJO"],"KAB. SAROLANGUN":["AIR HITAM","BATANG ASAI","BATHIN VIII","CERMIN NAN GEDANG","LIMUN","MANDIANGIN","MANDIANGIN TIMUR","PAUH","PELAWAN","SAROLANGUN","SINGKUT"],"KAB. TANJUNG JABUNG BARAT":["BATANG ASAM","BETARA","BRAM ITAM","KUALA BETARA","MERLUNG","MUARA PAPALIK","PENGABUAN","RENAH MENDALUH","SEBERANG KOTA","SENYERANG","TEBING TINGGI","TUNGKAL ILIR","TUNGKAL ULU"],"KAB. TANJUNG JABUNG TIMUR":["BERBAK","DENDANG","GERAGAI","KUALA JAMBI","MENDAHARA","MENDAHARA ULU","MUARA SABAK BARAT","MUARA SABAK TIMUR","NIPAH PANJANG","RANTAU RASAU","SADU"],"KAB. TEBO":["MUARA TABIR","RIMBO BUJANG","RIMBO ILIR","RIMBO ULU","SERAI SERUMPUN","SUMAY","TEBO ILIR","TEBO TENGAH","TEBO ULU","TENGAH ILIR","VII KOTO","VII KOTO ILIR"],"KOTA JAMBI":["ALAM BARAJO","DANAU SIPIN","DANAU TELUK","JAMBI SELATAN","JAMBI TIMUR","JELUTUNG","KOTA BARU","PAAL MERAH","PASAR JAMBI","PELAYANGAN","TELANAIPURA"],"KOTA SUNGAI PENUH":["HAMPARAN RAWANG","KOTO BARU","KUMUN DEBAI","PESISIR BUKIT","PONDOK TINGGI","SUNGAI BUNGKAL","SUNGAI PENUH","TANAH KAMPUNG"]},"JAWA BARAT":{"KAB. BANDUNG":["ARJASARI","BALEENDAH","BANJARAN","BOJONGSOANG","CANGKUANG","CICALENGKA","CIKANCUNG","CILENGKRANG","CILEUNYI","CIMAUNG","CIMENYAN","CIPARAY","CIWIDEY","DAYEUHKOLOT","IBUN","KATAPANG","KERTASARI","KUTAWARINGIN","MAJALAYA","MARGAASIH","MARGAHAYU","NAGREG","PACET","PAMEUNGPEUK","PANGALENGAN","PASEH","PASIRJAMBU","RANCABALI","RANCAEKEK","SOLOKAN JERUK","SOREANG"],"KAB. BANDUNG BARAT":["BATUJAJAR","CIHAMPELAS","CIKALONG WETAN","CILILIN","CIPATAT","CIPEUNDEUY","CIPONGKOR","CISARUA","GUNUNGHALU","LEMBANG","NGAMPRAH","PADALARANG","PARONGPONG","RONGGA","SAGULING","SINDANGKERTA"],"KAB. BEKASI":["BABELAN","BOJONGMANGU","CABANGBUNGIN","CIBARUSAH","CIBITUNG","CIKARANG BARAT","CIKARANG PUSAT","CIKARANG SELATAN","CIKARANG TIMUR","CIKARANG UTARA","KARANGBAHAGIA","KEDUNGWARINGIN","MUARA GEMBONG","PEBAYURAN","SERANG BARU","SETU","SUKAKARYA","SUKATANI","SUKAWANGI","TAMBELANG","TAMBUN SELATAN","TAMBUN UTARA","TARUMAJAYA"],"KAB. BOGOR":["BABAKAN MADANG","BOJONG GEDE","CARINGIN","CARIU","CIAMPEA","CIAWI","CIBINONG","CIBUNGBULANG","CIGOMBONG","CIGUDEG","CIJERUK","CILEUNGSI","CIOMAS","CISARUA","CISEENG","CITEUREUP","DRAMAGA","GUNUNG PUTRI","GUNUNG SINDUR","JASINGA","JONGGOL","KEMANG","KLAPANUNGGAL","LEUWILIANG","LEUWISADENG","MEGAMENDUNG","NANGGUNG","PAMIJAHAN","PARUNG","PARUNG PANJANG","RANCABUNGUR","RUMPIN","SUKAJAYA","SUKAMAKMUR","SUKARAJA","TAJUR HALANG","TAMANSARI","TANJUNGSARI","TENJO","TENJOLAYA"],"KAB. CIAMIS":["BANJARANYAR","BANJARSARI","BAREGBEG","CIAMIS","CIDOLOG","CIHAURBEUTI","CIJEUNGJING","CIKONENG","CIMARAGAS","CIPAKU","CISAGA","JATINAGARA","KAWALI","LAKBOK","LUMBUNG","PAMARICAN","PANAWANGAN","PANJALU","PANUMBANGAN","PURWADADI","RAJADESA","RANCAH","SADANANYA","SINDANGKASIH","SUKADANA","SUKAMANTRI","TAMBAKSARI"],"KAB. CIANJUR":["AGRABINTA","BOJONGPICUNG","CAMPAKA","CAMPAKAMULYA","CIANJUR","CIBEBER","CIBINONG","CIDAUN","CIJATI","CIKADU","CIKALONGKULON","CILAKU","CIPANAS","CIRANJANG","CUGENANG","GEKBRONG","HAURWANGI","KADUPANDAK","KARANGTENGAH","LELES","MANDE","NARINGGUL","PACET","PAGELARAN","PASIRKUDA","SINDANGBARANG","SUKALUYU","SUKANAGARA","SUKARESMI","TAKOKAK","TANGGEUNG","WARUNGKONDANG"],"KAB. CIREBON":["ARJAWINANGUN","ASTANAJAPURA","BABAKAN","BEBER","CILEDUG","CIWARINGIN","DEPOK","DUKUPUNTANG","GEBANG","GEGESIK","GEMPOL","GREGED","GUNUNGJATI","JAMBLANG","KALIWEDI","KAPETAKAN","KARANGSEMBUNG","KARANGWARENG","KEDAWUNG","KLANGENAN","LEMAHABANG","LOSARI","MUNDU","PABEDILAN","PABUARAN","PALIMANAN","PANGENAN","PANGURAGAN","PASALEMAN","PLERED","PLUMBON","SEDONG","SUMBER","SURANENGGALA","SUSUKAN","SUSUKANLEBAK","TALUN","TENGAH TANI","WALED","WERU"],"KAB. GARUT":["BANJARWANGI","BANYURESMI","BAYONGBONG","BLUBUR LIMBANGAN","BUNGBULANG","CARINGIN","CIBALONG","CIBATU","CIBIUK","CIGEDUG","CIHURIP","CIKAJANG","CIKELET","CILAWU","CISEWU","CISOMPET","CISURUPAN","GARUT KOTA","KADUNGORA","KARANGPAWITAN","KARANGTENGAH","KERSAMANAH","LELES","LEUWIGOONG","MALANGBONG","MEKARMUKTI","PAKENJENG","PAMEUNGPEUK","PAMULIHAN","PANGATIKAN","PASIRWANGI","PEUNDEUY","SAMARANG","SELAAWI","SINGAJAYA","SUCINARAJA","SUKARESMI","SUKAWENING","TALEGONG","TAROGONG KALER","TAROGONG KIDUL","WANARAJA"],"KAB. INDRAMAYU":["ANJATAN","ARAHAN","BALONGAN","BANGODUA","BONGAS","CANTIGI","CIKEDUNG","GABUSWETAN","GANTAR","HAURGEULIS","INDRAMAYU","JATIBARANG","JUNTINYUAT","KANDANGHAUR","KARANGAMPEL","KEDOKAN BUNDER","KERTASEMAYA","KRANGKENG","KROYA","LELEA","LOHBENER","LOSARANG","PASEKAN","PATROL","SINDANG","SLIYEG","SUKAGUMIWANG","SUKRA","TERISI","TUKDANA","WIDASARI"],"KAB. KARAWANG":["BANYUSARI","BATUJAYA","CIAMPEL","CIBUAYA","CIKAMPEK","CILAMAYA KULON","CILAMAYA WETAN","CILEBAR","JATISARI","JAYAKERTA","KARAWANG BARAT","KARAWANG TIMUR","KLARI","KOTABARU","KUTAWALUYA","LEMAHABANG","MAJALAYA","PAKISJAYA","PANGKALAN","PEDES","PURWASARI","RAWAMERTA","RENGASDENGKLOK","TEGALWARU","TELAGASARI","TELUKJAMBE BARAT","TELUKJAMBE TIMUR","TEMPURAN","TIRTAJAYA","TIRTAMULYA"],"KAB. KUNINGAN":["CIAWIGEBANG","CIBEUREUM","CIBINGBIN","CIDAHU","CIGANDAMEKAR","CIGUGUR","CILEBAK","CILIMUS","CIMAHI","CINIRU","CIPICUNG","CIWARU","DARMA","GARAWANGI","HANTARA","JALAKSANA","JAPARA","KADUGEDE","KALIMANGGIS","KARANGKANCANA","KRAMATMULYA","KUNINGAN","LEBAKWANGI","LURAGUNG","MALEBER","MANDIRANCAN","NUSAHERANG","PANCALANG","PASAWAHAN","SELAJAMBE","SINDANGAGUNG","SUBANG"],"KAB. MAJALENGKA":["ARGAPURA","BANJARAN","BANTARUJEG","CIGASONG","CIKIJING","CINGAMBUL","DAWUAN","JATITUJUH","JATIWANGI","KADIPATEN","KASOKANDEL","KERTAJATI","LEMAHSUGIH","LEUWIMUNDING","LIGUNG","MAJA","MAJALENGKA","MALAUSMA","PALASAH","PANYINGKIRAN","RAJAGALUH","SINDANG","SINDANGWANGI","SUKAHAJI","SUMBERJAYA","TALAGA"],"KAB. PANGANDARAN":["CIGUGUR","CIJULANG","CIMERAK","KALIPUCANG","LANGKAPLANCAR","MANGUNJAYA","PADAHERANG","PANGANDARAN","PARIGI","SIDAMULIH"],"KAB. PURWAKARTA":["BABAKANCIKAO","BOJONG","BUNGURSARI","CAMPAKA","CIBATU","DARANGDAN","JATILUHUR","KIARAPEDES","MANIIS","PASAWAHAN","PLERED","PONDOK SALAM","PURWAKARTA","SUKASARI","SUKATANI","TEGAL WARU","WANAYASA"],"KAB. SUBANG":["BINONG","BLANAKAN","CIASEM","CIATER","CIBOGO","CIJAMBE","CIKAUM","CIPEUNDEUY","CIPUNAGARA","CISALAK","COMPRENG","DAWUAN","JALANCAGAK","KALIJATI","KASOMALANG","LEGONKULON","PABUARAN","PAGADEN","PAGADEN BARAT","PAMANUKAN","PATOKBEUSI","PURWADADI","PUSAKAJAYA","PUSAKANAGARA","SAGALAHERANG","SERANGPANJANG","SUBANG","SUKASARI","TAMBAKDAHAN","TANJUNGSIANG"],"KAB. SUKABUMI":["BANTARGADUNG","BOJONG GENTENG","CARINGIN","CIAMBAR","CIBADAK","CIBITUNG","CICANTAYAN","CICURUG","CIDADAP","CIDAHU","CIDOLOG","CIEMAS","CIKAKAK","CIKEMBAR","CIKIDANG","CIMANGGU","CIRACAP","CIREUNGHAS","CISAAT","CISOLOK","CURUGKEMBAR","GEGER BITUNG","GUNUNGGURUH","JAMPANG KULON","JAMPANG TENGAH","KABANDUNGAN","KADUDAMPIT","KALAPA NUNGGAL","KALI BUNDER","KEBONPEDES","LENGKONG","NAGRAK","NYALINDUNG","PABUARAN","PALABUHANRATU","PARAKAN SALAK","PARUNG KUDA","PURABAYA","SAGARANTEN","SIMPENAN","SUKABUMI","SUKALARANG","SUKARAJA","SURADE","TEGAL BULEUD","WALURAN","WARUNG KIARA"],"KAB. SUMEDANG":["BUAHDUA","CIBUGEL","CIMALAKA","CIMANGGUNG","CISARUA","CISITU","CONGGEANG","DARMARAJA","GANEAS","JATIGEDE","JATINANGOR","JATINUNGGAL","PAMULIHAN","PASEH","RANCAKALONG","SITURAJA","SUKASARI","SUMEDANG SELATAN","SUMEDANG UTARA","SURIAN","TANJUNGKERTA","TANJUNGMEDAR","TANJUNGSARI","TOMO","UJUNG JAYA","WADO"],"KAB. TASIKMALAYA":["BANTARKALONG","BOJONGASIH","BOJONGGAMBIR","CIAWI","CIBALONG","CIGALONTANG","CIKALONG","CIKATOMAS","CINEAM","CIPATUJAH","CISAYONG","CULAMEGA","GUNUNGTANJUNG","JAMANIS","JATIWARAS","KADIPATEN","KARANGJAYA","KARANGNUNGGAL","LEUWISARI","MANGUNREJA","MANONJAYA","PADAKEMBANG","PAGERAGEUNG","PANCATENGAH","PARUNGPONTENG","PUSPAHIANG","RAJAPOLAH","SALAWU","SALOPA","SARIWANGI","SINGAPARNA","SODONGHILIR","SUKAHENING","SUKARAJA","SUKARAME","SUKARATU","SUKARESIK","TANJUNGJAYA","TARAJU"],"KOTA BANDUNG":["ANDIR","ANTAPANI","ARCAMANIK","ASTANAANYAR","BABAKAN CIPARAY","BANDUNG KIDUL","BANDUNG KULON","BANDUNG WETAN","BATUNUNGGAL","BOJONGLOA KALER","BOJONGLOA KIDUL","BUAHBATU","CIBEUNYING KALER","CIBEUNYING KIDUL","CIBIRU","CICENDO","CIDADAP","CINAMBO","COBLONG","GEDEBAGE","KIARACONDONG","LENGKONG","MANDALAJATI","PANYILEUKAN","RANCASARI","REGOL","SUKAJADI","SUKASARI","SUMUR BANDUNG","UJUNG BERUNG"],"KOTA BANJAR":["BANJAR","LANGENSARI","PATARUMAN","PURWAHARJA"],"KOTA BEKASI":["BANTARGEBANG","BEKASI BARAT","BEKASI SELATAN","BEKASI TIMUR","BEKASI UTARA","JATIASIH","JATISAMPURNA","MEDAN SATRIA","MUSTIKAJAYA","PONDOKGEDE","PONDOKMELATI","RAWALUMBU"],"KOTA BOGOR":["BOGOR BARAT","BOGOR SELATAN","BOGOR TENGAH","BOGOR TIMUR","BOGOR UTARA","TANAH SAREAL"],"KOTA CIMAHI":["CIMAHI SELATAN","CIMAHI TENGAH","CIMAHI UTARA"],"KOTA CIREBON":["HARJAMUKTI","KEJAKSAN","KESAMBI","LEMAHWUNGKUK","PEKALIPAN"],"KOTA DEPOK":["BEJI","BOJONGSARI","CILODONG","CIMANGGIS","CINERE","CIPAYUNG","LIMO","PANCORAN MAS","SAWANGAN","SUKMAJAYA","TAPOS"],"KOTA SUKABUMI":["BAROS","CIBEUREUM","CIKOLE","CITAMIANG","GUNUNG PUYUH","LEMBURSITU","WARUDOYONG"],"KOTA TASIKMALAYA":["BUNGURSARI","CIBEUREUM","CIHIDEUNG","CIPEDES","INDIHIANG","KAWALU","MANGKUBUMI","PURBARATU","TAMANSARI","TAWANG"]},"JAWA TENGAH":{"KAB. BANJARNEGARA":["BANJARMANGU","BANJARNEGARA","BATUR","BAWANG","KALIBENING","KARANGKOBAR","MADUKARA","MANDIRAJA","PAGEDONGAN","PAGENTAN","PANDANARUM","PEJAWARAN","PUNGGELAN","PURWANEGARA","PURWAREJA KLAMPOK","RAKIT","SIGALUH","SUSUKAN","WANADADI","WANAYASA"],"KAB. BANYUMAS":["AJIBARANG","BANYUMAS","BATURRADEN","CILONGOK","GUMELAR","JATILAWANG","KALIBAGOR","KARANGLEWAS","KEBASEN","KEDUNG BANTENG","KEMBARAN","KEMRANJEN","LUMBIR","PATIKRAJA","PEKUNCEN","PURWOJATI","PURWOKERTO BARAT","PURWOKERTO SELATAN","PURWOKERTO TIMUR","PURWOKERTO UTARA","RAWALO","SOKARAJA","SOMAGEDE","SUMBANG","SUMPIUH","TAMBAK","WANGON"],"KAB. BATANG":["BANDAR","BANYUPUTIH","BATANG","BAWANG","BLADO","GRINGSING","KANDEMAN","LIMPUNG","PECALUNGAN","REBAN","SUBAH","TERSONO","TULIS","WARUNGASEM","WONOTUNGGAL"],"KAB. BLORA":["BANJAREJO","BOGOREJO","CEPU","JAPAH","JATI","JEPON","JIKEN","KEDUNGTUBAN","KOTA BLORA","KRADENAN","KUNDURAN","NGAWEN","RANDUBLATUNG","SAMBONG","TODANAN","TUNJUNGAN"],"KAB. BOYOLALI":["AMPEL","ANDONG","BANYUDONO","BOYOLALI","CEPOGO","GLADAGSARI","JUWANGI","KARANGGEDE","KEMUSU","KLEGO","MOJOSONGO","MUSUK","NGEMPLAK","NOGOSARI","SAMBI","SAWIT","SELO","SIMO","TAMANSARI","TERAS","WONOSAMODRO","WONOSEGORO"],"KAB. BREBES":["BANJARHARJO","BANTARKAWUNG","BREBES","BULAKAMBA","BUMIAYU","JATIBARANG","KERSANA","KETANGGUNGAN","LARANGAN","LOSARI","PAGUYANGAN","SALEM","SIRAMPOG","SONGGOM","TANJUNG","TONJONG","WANASARI"],"KAB. CILACAP":["ADIPALA","BANTARSARI","BINANGUN","CILACAP SELATAN","CILACAP TENGAH","CILACAP UTARA","CIMANGGU","CIPARI","DAYEUHLUHUR","GANDRUNGMANGU","JERUKLEGI","KAMPUNG LAUT","KARANGPUCUNG","KAWUNGANTEN","KEDUNGREJA","KESUGIHAN","KROYA","MAJENANG","MAOS","NUSAWUNGU","PATIMUAN","SAMPANG","SIDAREJA","WANAREJA"],"KAB. DEMAK":["BONANG","DEMAK","DEMPET","GAJAH","GUNTUR","KARANG TENGAH","KARANGANYAR","KARANGAWEN","KEBONAGUNG","MIJEN","MRANGGEN","SAYUNG","WEDUNG","WONOSALAM"],"KAB. GROBOGAN":["BRATI","GABUS","GEYER","GODONG","GROBOGAN","GUBUG","KARANGRAYUNG","KEDUNGJATI","KLAMBU","KRADENAN","NGARINGAN","PENAWANGAN","PULOKULON","PURWODADI","TANGGUNGHARJO","TAWANGHARJO","TEGOWANU","TOROH","WIROSARI"],"KAB. JEPARA":["BANGSRI","BATEALIT","DONOROJO","JEPARA","KALINYAMATAN","KARIMUNJAWA","KEDUNG","KELING","KEMBANG","MAYONG","MLONGGO","NALUMSARI","PAKIS AJI","PECANGAAN","TAHUNAN","WELAHAN"],"KAB. KARANGANYAR":["COLOMADU","GONDANGREJO","JATEN","JATIPURO","JATIYOSO","JENAWI","JUMANTONO","JUMAPOLO","KARANGANYAR","KARANGPANDAN","KEBAKKRAMAT","KERJO","MATESIH","MOJOGEDANG","NGARGOYOSO","TASIKMADU","TAWANGMANGU"],"KAB. KEBUMEN":["ADIMULYO","ALIAN","AMBAL","AYAH","BONOROWO","BUAYAN","BULUSPESANTREN","GOMBONG","KARANGANYAR","KARANGGAYAM","KARANGSAMBUNG","KEBUMEN","KLIRONG","KUTOWINANGUN","KUWARASAN","MIRIT","PADURESO","PEJAGOAN","PETANAHAN","PONCOWARNO","PREMBUN","PURING","ROWOKELE","SADANG","SEMPOR","SRUWENG"],"KAB. KENDAL":["BOJA","BRANGSONG","CEPIRING","GEMUH","KALIWUNGU","KALIWUNGU SELATAN","KANGKUNG","KENDAL","LIMBANGAN","NGAMPEL","PAGERRUYUNG","PATEAN","PATEBON","PEGANDON","PLANTUNGAN","RINGINARUM","ROWOSARI","SINGOROJO","SUKOREJO","WELERI"],"KAB. KLATEN":["BAYAT","CAWAS","CEPER","DELANGGU","GANTIWARNO","JATINOM","JOGONALAN","JUWIRING","KALIKOTES","KARANGANOM","KARANGDOWO","KARANGNONGKO","KEBONARUM","KEMALANG","KLATEN SELATAN","KLATEN TENGAH","KLATEN UTARA","MANISRENGGO","NGAWEN","PEDAN","POLANHARJO","PRAMBANAN","TRUCUK","TULUNG","WEDI","WONOSARI"],"KAB. KUDUS":["BAE","DAWE","GEBOG","JATI","JEKULO","KALIWUNGU","KOTA KUDUS","MEJOBO","UNDAAN"],"KAB. MAGELANG":["BANDONGAN","BOROBUDUR","CANDIMULYO","DUKUN","GRABAG","KAJORAN","KALIANGKRIK","MERTOYUDAN","MUNGKID","MUNTILAN","NGABLAK","NGLUWAR","PAKIS","SALAM","SALAMAN","SAWANGAN","SECANG","SRUMBUNG","TEGALREJO","TEMPURAN","WINDUSARI"],"KAB. PATI":["BATANGAN","CLUWAK","DUKUHSETI","GABUS","GEMBONG","GUNUNG WUNGKAL","JAKEN","JAKENAN","JUWANA","KAYEN","MARGOREJO","MARGOYOSO","PATI","PUCAKWANGI","SUKOLILO","TAMBAKROMO","TAYU","TLOGOWUNGU","TRANGKIL","WEDARIJAKSA","WINONG"],"KAB. PEKALONGAN":["BOJONG","BUARAN","DORO","KAJEN","KANDANGSERANG","KARANGANYAR","KARANGDADAP","KEDUNGWUNI","KESESI","LEBAKBARANG","PANINGGARAN","PETUNGKRIONO","SIWALAN","SRAGI","TALUN","TIRTO","WIRADESA","WONOKERTO","WONOPRINGGO"],"KAB. PEMALANG":["AMPELGADING","BANTARBOLANG","BELIK","BODEH","COMAL","MOGA","PEMALANG","PETARUKAN","PULOSARI","RANDUDONGKAL","TAMAN","ULUJAMI","WARUNGPRING","WATUKUMPUL"],"KAB. PURBALINGGA":["BOBOTSARI","BOJONGSARI","BUKATEJA","KALIGONDANG","KALIMANAH","KARANGANYAR","KARANGJAMBU","KARANGMONCOL","KARANGREJA","KEJOBONG","KEMANGKON","KERTANEGARA","KUTASARI","MREBET","PADAMARA","PENGADEGAN","PURBALINGGA","REMBANG"],"KAB. PURWOREJO":["BAGELEN","BANYU URIP","BAYAN","BENER","BRUNO","BUTUH","GEBANG","GRABAG","KALIGESING","KEMIRI","KUTOARJO","LOANO","NGOMBOL","PITURUH","PURWODADI","PURWOREJO"],"KAB. REMBANG":["BULU","GUNEM","KALIORI","KRAGAN","LASEM","PAMOTAN","PANCUR","REMBANG","SALE","SARANG","SEDAN","SLUKE","SULANG","SUMBER"],"KAB. SEMARANG":["AMBARAWA","BANCAK","BANDUNGAN","BANYUBIRU","BAWEN","BERGAS","BRINGIN","GETASAN","JAMBU","KALIWUNGU","PABELAN","PRINGAPUS","SUMOWONO","SURUH","SUSUKAN","TENGARAN","TUNTANG","UNGARAN BARAT","UNGARAN TIMUR"],"KAB. SRAGEN":["GEMOLONG","GESI","GONDANG","JENAR","KALIJAMBE","KARANGMALANG","KEDAWUNG","MASARAN","MIRI","MONDOKAN","NGRAMPAL","PLUPUH","SAMBIREJO","SAMBUNG MACAN","SIDOHARJO","SRAGEN","SUKODONO","SUMBERLAWANG","TANGEN","TANON"],"KAB. SUKOHARJO":["BAKI","BENDOSARI","BULU","GATAK","GROGOL","KARTASURA","MOJOLABAN","NGUTER","POLOKARTO","SUKOHARJO","TAWANGSARI","WERU"],"KAB. TEGAL":["ADIWERNA","BALAPULANG","BOJONG","BUMIJAWA","DUKUHTURI","DUKUHWARU","JATINEGARA","KEDUNG BANTENG","KRAMAT","LEBAKSIU","MARGASARI","PAGERBARANG","PANGKAH","SLAWI","SURADADI","TALANG","TARUB","WARUREJA"],"KAB. TEMANGGUNG":["BANSARI","BEJEN","BULU","CANDIROTO","GEMAWANG","JUMO","KALORAN","KANDANGAN","KEDU","KLEDUNG","KRANGGAN","NGADIREJO","PARAKAN","PRINGSURAT","SELOPAMPANG","TEMANGGUNG","TEMBARAK","TLOGOMULYO","TRETEP","WONOBOYO"],"KAB. WONOGIRI":["BATURETNO","BATUWARNO","BULUKERTO","EROMOKO","GIRIMARTO","GIRITONTRO","GIRIWOYO","JATIPURNO","JATIROTO","JATISRONO","KARANGTENGAH","KISMANTORO","MANYARAN","NGADIROJO","NGUNTORONADI","PARANGGUPITO","PRACIMANTORO","PUHPELEM","PURWANTORO","SELOGIRI","SIDOHARJO","SLOGOHIMO","TIRTOMOYO","WONOGIRI","WURYANTORO"],"KAB. WONOSOBO":["GARUNG","KALIBAWANG","KALIKAJAR","KALIWIRO","KEJAJAR","KEPIL","KERTEK","LEKSONO","MOJOTENGAH","SAPURAN","SELOMERTO","SUKOHARJO","WADASLINTANG","WATUMALANG","WONOSOBO"],"KOTA MAGELANG":["MAGELANG SELATAN","MAGELANG TENGAH","MAGELANG UTARA"],"KOTA PEKALONGAN":["PEKALONGAN BARAT","PEKALONGAN SELATAN","PEKALONGAN TIMUR","PEKALONGAN UTARA"],"KOTA SALATIGA":["ARGOMULYO","SIDOMUKTI","SIDOREJO","TINGKIR"],"KOTA SEMARANG":["BANYUMANIK","CANDISARI","GAJAH MUNGKUR","GAYAMSARI","GENUK","GUNUNG PATI","MIJEN","NGALIYAN","PEDURUNGAN","SEMARANG BARAT","SEMARANG SELATAN","SEMARANG TENGAH","SEMARANG TIMUR","SEMARANG UTARA","TEMBALANG","TUGU"],"KOTA SURAKARTA":["BANJARSARI","JEBRES","LAWEYAN","PASAR KLIWON","SERENGAN"],"KOTA TEGAL":["MARGADANA","TEGAL BARAT","TEGAL SELATAN","TEGAL TIMUR"]},"JAWA TIMUR":{"KAB. BANGKALAN":["AROSBAYA","BANGKALAN","BLEGA","BURNEH","GALIS","GEGER","KAMAL","KLAMPIS","KOKOP","KONANG","KWANYAR","LABANG","MODUNG","SEPULU","SOCAH","TANAH MERAH","TANJUNGBUMI","TRAGAH"],"KAB. BANYUWANGI":["BANGOREJO","BANYUWANGI","BLIMBINGSARI","CLURING","GAMBIRAN","GENTENG","GIRI","GLAGAH","GLENMORE","KABAT","KALIBARU","KALIPURO","LICIN","MUNCAR","PESANGGARAN","PURWOHARJO","ROGOJAMPI","SEMPU","SILIRAGUNG","SINGOJURUH","SONGGON","SRONO","TEGALDLIMO","TEGALSARI","WONGSOREJO"],"KAB. BLITAR":["BAKUNG","BINANGUN","DOKO","GANDUSARI","GARUM","KADEMANGAN","KANIGORO","KESAMBEN","NGLEGOK","PANGGUNGREJO","PONGGOK","SANANKULON","SELOPURO","SELOREJO","SRENGAT","SUTOJAYAN","TALUN","UDANAWU","WATES","WLINGI","WONODADI","WONOTIRTO"],"KAB. BOJONEGORO":["BALEN","BAURENO","BOJONEGORO","BUBULAN","DANDER","GAYAM","GONDANG","KALITIDU","KANOR","KAPAS","KASIMAN","KEDEWAN","KEDUNGADEM","KEPOH BARU","MALO","MARGOMULYO","NGAMBON","NGASEM","NGRAHO","PADANGAN","PURWOSARI","SEKAR","SUGIHWARAS","SUKOSEWU","SUMBERREJO","TAMBAKREJO","TEMAYANG","TRUCUK"],"KAB. BONDOWOSO":["BINAKAL","BONDOWOSO","BOTOLINGGO","CERMEE","CURAH DAMI","GRUJUGAN","IJEN","JAMBESARI DARUS SHOLAH","KLABANG","MAESAN","PAKEM","PRAJEKAN","PUJER","SUKOSARI","SUMBER WRINGIN","TAMAN KROCOK","TAMANAN","TAPEN","TEGALAMPEL","TENGGARANG","TLOGOSARI","WONOSARI","WRINGIN"],"KAB. GRESIK":["BALONGPANGGANG","BENJENG","BUNGAH","CERME","DRIYOREJO","DUDUKSAMPEYAN","DUKUN","GRESIK","KEBOMAS","KEDAMEAN","MANYAR","MENGANTI","PANCENG","SANGKAPURA","SIDAYU","TAMBAK","UJUNGPANGKAH","WRINGINANOM"],"KAB. JEMBER":["AJUNG","AMBULU","ARJASA","BALUNG","BANGSALSARI","GUMUK MAS","JELBUK","JENGGAWAH","JOMBANG","KALISAT","KALIWATES","KENCONG","LEDOKOMBO","MAYANG","MUMBULSARI","PAKUSARI","PANTI","PATRANG","PUGER","RAMBIPUJI","SEMBORO","SILO","SUKORAMBI","SUKOWONO","SUMBER BARU","SUMBERJAMBE","SUMBERSARI","TANGGUL","TEMPUREJO","UMBULSARI","WULUHAN"],"KAB. JOMBANG":["BANDAR KEDUNG MULYO","BARENG","DIWEK","GUDO","JOGO ROTO","JOMBANG","KABUH","KESAMBEN","KUDU","MEGALUH","MOJOAGUNG","MOJOWARNO","NGORO","NGUSIKAN","PERAK","PETERONGAN","PLANDAAN","PLOSO","SUMOBITO","TEMBELANG","WONOSALAM"],"KAB. KEDIRI":["BADAS","BANYAKAN","GAMPENGREJO","GROGOL","GURAH","KANDANGAN","KANDAT","KAYEN KIDUL","KEPUNG","KRAS","KUNJANG","MOJO","NGADILUWIH","NGANCAR","NGASEM","PAGU","PAPAR","PARE","PLEMAHAN","PLOSOKLATEN","PUNCU","PURWOASRI","RINGINREJO","SEMEN","TAROKAN","WATES"],"KAB. LAMONGAN":["BABAT","BLULUK","BRONDONG","DEKET","GLAGAH","KALITENGAH","KARANG GENENG","KARANGBINANGUN","KEDUNGPRING","KEMBANGBAHU","LAMONGAN","LAREN","MADURAN","MANTUP","MODO","NGIMBANG","PACIRAN","PUCUK","SAMBENG","SARIREJO","SEKARAN","SOLOKURO","SUGIO","SUKODADI","SUKORAME","TIKUNG","TURI"],"KAB. LUMAJANG":["CANDIPURO","GUCIALIT","JATIROTO","KEDUNGJAJANG","KLAKAH","KUNIR","LUMAJANG","PADANG","PASIRIAN","PASRUJAMBE","PRONOJIWO","RANDUAGUNG","RANUYOSO","ROWOKANGKUNG","SENDURO","SUKODONO","SUMBERSUKO","TEKUNG","TEMPEH","TEMPURSARI","YOSOWILANGUN"],"KAB. MADIUN":["BALEREJO","DAGANGAN","DOLOPO","GEGER","GEMARANG","JIWAN","KARE","KEBONSARI","MADIUN","MEJAYAN","PILANGKENCENG","SARADAN","SAWAHAN","WONOASRI","WUNGU"],"KAB. MAGETAN":["BARAT","BENDO","KARANGREJO","KARAS","KARTOHARJO","KAWEDANAN","LEMBEYAN","MAGETAN","MAOSPATI","NGARIBOYO","NGUNTORONADI","PANEKAN","PARANG","PLAOSAN","PONCOL","SIDOREJO","SUKOMORO","TAKERAN"],"KAB. MALANG":["AMPELGADING","BANTUR","BULULAWANG","DAMPIT","DAU","DONOMULYO","GEDANGAN","GONDANGLEGI","JABUNG","KALIPARE","KARANGPLOSO","KASEMBON","KEPANJEN","KROMENGAN","LAWANG","NGAJUM","NGANTANG","PAGAK","PAGELARAN","PAKIS","PAKISAJI","PONCOKUSUMO","PUJON","SINGOSARI","SUMBERMANJING WETAN","SUMBERPUCUNG","TAJINAN","TIRTOYUDO","TUMPANG","TUREN","WAGIR","WAJAK","WONOSARI"],"KAB. MOJOKERTO":["BANGSAL","DAWAR BLANDONG","DLANGGU","GEDEK","GONDANG","JATIREJO","JETIS","KEMLAGI","KUTOREJO","MOJOANYAR","MOJOSARI","NGORO","PACET","PUNGGING","PURI","SOOKO","TRAWAS","TROWULAN"],"KAB. NGANJUK":["BAGOR","BARON","BERBEK","GONDANG","JATIKALEN","KERTOSONO","LENGKONG","LOCERET","NGANJUK","NGETOS","NGLUYU","NGRONGGOT","PACE","PATIANROWO","PRAMBON","REJOSO","SAWAHAN","SUKOMORO","TANJUNGANOM","WILANGAN"],"KAB. NGAWI":["BRINGIN","GENENG","GERIH","JOGOROGO","KARANGANYAR","KARANGJATI","KASREMAN","KEDUNGGALAR","KENDAL","KWADUNGAN","MANTINGAN","NGAWI","NGRAMBE","PADAS","PANGKUR","PARON","PITU","SINE","WIDODAREN"],"KAB. PACITAN":["ARJOSARI","BANDAR","DONOROJO","KEBONAGUNG","NAWANGAN","NGADIROJO","PACITAN","PRINGKUKU","PUNUNG","SUDIMORO","TEGALOMBO","TULAKAN"],"KAB. PAMEKASAN":["BATU MARMAR","GALIS","KADUR","LARANGAN","PADEMAWU","PAKONG","PALENGAAN","PAMEKASAN","PASEAN","PEGANTENAN","PROPPO","TLANAKAN","WARU"],"KAB. PASURUAN":["BANGIL","BEJI","GEMPOL","GONDANG WETAN","GRATI","KEJAYAN","KRATON","LEKOK","LUMBANG","NGULING","PANDAAN","PASREPAN","POHJENTREK","PRIGEN","PURWODADI","PURWOSARI","PUSPO","REJOSO","REMBANG","SUKOREJO","TOSARI","TUTUR","WINONGAN","WONOREJO"],"KAB. PONOROGO":["BABADAN","BADEGAN","BALONG","BUNGKAL","JAMBON","JENANGAN","JETIS","KAUMAN","MLARAK","NGEBEL","NGRAYUN","PONOROGO","PUDAK","PULUNG","SAMBIT","SAMPUNG","SAWOO","SIMAN","SLAHUNG","SOOKO","SUKOREJO"],"KAB. PROBOLINGGO":["BANTARAN","BANYUANYAR","BESUK","DRINGU","GADING","GENDING","KOTAANYAR","KRAKSAAN","KREJENGAN","KRUCIL","KURIPAN","LECES","LUMBANG","MARON","PAITON","PAJARAKAN","PAKUNIRAN","SUKAPURA","SUMBER","SUMBERASIH","TEGALSIWALAN","TIRIS","TONGAS","WONOMERTO"],"KAB. SAMPANG":["BANYUATES","CAMPLONG","JRENGIK","KARANG PENANG","KEDUNGDUNG","KETAPANG","OMBEN","PANGARENGAN","ROBATAL","SAMPANG","SOKOBANAH","SRESEH","TAMBELANGAN","TORJUN"],"KAB. SIDOARJO":["BALONG BENDO","BUDURAN","CANDI","GEDANGAN","JABON","KREMBUNG","KRIAN","PORONG","PRAMBON","SEDATI","SIDOARJO","SUKODONO","TAMAN","TANGGULANGIN","TARIK","TULANGAN","WARU","WONOAYU"],"KAB. SITUBONDO":["ARJASA","ASEMBAGUS","BANYUGLUGUR","BANYUPUTIH","BESUKI","BUNGATAN","JANGKAR","JATIBANTENG","KAPONGAN","KENDIT","MANGARAN","MLANDINGAN","PANARUKAN","PANJI","SITUBONDO","SUBOH","SUMBERMALANG"],"KAB. SUMENEP":["AMBUNTEN","ARJASA","BATANG BATANG","BATUAN","BATUPUTIH","BLUTO","DASUK","DUNGKEK","GANDING","GAPURA","GAYAM","GILIGENTENG","GULUK GULUK","KALIANGET","KANGAYAN","KOTA SUMENEP","LENTENG","MANDING","MASALEMBU","NONGGUNONG","PASONGSONGAN","PRAGAAN","RAAS","RUBARU","SAPEKEN","SARONGGI","TALANGO"],"KAB. TRENGGALEK":["BENDUNGAN","DONGKO","DURENAN","GANDUSARI","KAMPAK","KARANGAN","MUNJUNGAN","PANGGUL","POGALAN","PULE","SURUH","TRENGGALEK","TUGU","WATULIMO"],"KAB. TUBAN":["BANCAR","BANGILAN","GRABAGAN","JATIROGO","JENU","KENDURUAN","KEREK","MERAKURAK","MONTONG","PALANG","PARENGAN","PLUMPANG","RENGEL","SEMANDING","SENORI","SINGGAHAN","SOKO","TAMBAKBOYO","TUBAN","WIDANG"],"KAB. TULUNGAGUNG":["BANDUNG","BESUKI","BOYOLANGU","CAMPUR DARAT","GONDANG","KALIDAWIR","KARANGREJO","KAUMAN","KEDUNGWARU","NGANTRU","NGUNUT","PAGER WOJO","PAKEL","PUCANG LABAN","REJOTANGAN","SENDANG","SUMBERGEMPOL","TANGGUNG GUNUNG","TULUNGAGUNG"],"KOTA BATU":["BATU","BUMIAJI","JUNREJO"],"KOTA BLITAR":["KEPANJENKIDUL","SANANWETAN","SUKOREJO"],"KOTA KEDIRI":["KOTA","MOJOROTO","PESANTREN"],"KOTA MADIUN":["KARTOHARJO","MANGU HARJO","TAMAN"],"KOTA MALANG":["BLIMBING","KEDUNGKANDANG","KLOJEN","LOWOKWARU","SUKUN"],"KOTA MOJOKERTO":["KRANGGAN","MAGERSARI","PRAJURIT KULON"],"KOTA PASURUAN":["BUGULKIDUL","GADINGREJO","PANGGUNGREJO","PURWOREJO"],"KOTA PROBOLINGGO":["KADEMANGAN","KANIGARAN","KEDOPOK","MAYANGAN","WONOASIH"],"KOTA SURABAYA":["ASEMROWO","BENOWO","BUBUTAN","BULAK","DUKUH PAKIS","GAYUNGAN","GENTENG","GUBENG","GUNUNG ANYAR","JAMBANGAN","KARANG PILANG","KENJERAN","KREMBANGAN","LAKARSANTRI","MULYOREJO","PABEAN CANTIAN","PAKAL","RUNGKUT","SAMBIKEREP","SAWAHAN","SEMAMPIR","SIMOKERTO","SUKO MANUNGGAL","SUKOLILO","TAMBAKSARI","TANDES","TEGALSARI","TENGGILIS MEJOYO","WIYUNG","WONOCOLO","WONOKROMO"]},"KALIMANTAN BARAT":{"KAB. BENGKAYANG":["BENGKAYANG","CAPKALA","JAGOI BABANG","LEDO","LEMBAH BAWANG","LUMAR","MONTERADO","SAMALANTAN","SANGGAU LEDO","SELUAS","SIDING","SUNGAI BETUNG","SUNGAI RAYA","SUNGAI RAYA KEPULAUAN","SUTI SEMARANG","TERIAK","TUJUH BELAS"],"KAB. KAPUAS HULU":["BADAU","BATANG LUPAR","BIKA","BOYAN TANJUNG","BUNUT HILIR","BUNUT HULU","EMBALOH HILIR","EMBALOH HULU","EMPANANG","HULU GURUNG","JONGKONG","KALIS","MENTEBAH","PENGKADAN","PURING KENCANA","PUTUSSIBAU SELATAN","PUTUSSIBAU UTARA","SEBERUANG","SELIMBAU","SEMITAU","SILAT HILIR","SILAT HULU","SUHAID"],"KAB. KAYONG UTARA":["KEPULAUAN KARIMATA","PULAU MAYA","SEPONTI","SIMPANG HILIR","SUKADANA","TELUK BATANG"],"KAB. KETAPANG":["AIR UPAS","BENUA KAYONG","DELTA PAWAN","HULU SUNGAI","JELAI HULU","KENDAWANGAN","MANIS MATA","MARAU","MATAN HILIR SELATAN","MATAN HILIR UTARA","MUARA PAWAN","NANGA TAYAP","PEMAHAN","SANDAI","SIMPANG DUA","SIMPANG HULU","SINGKUP","SUNGAI LAUR","SUNGAI MELAYU RAYAK","TUMBANG TITI"],"KAB. KUBU RAYA":["BATU AMPAR","KUALA MANDOR B","KUBU","RASAU JAYA","SUNGAI AMBAWANG","SUNGAI KAKAP","SUNGAI RAYA","TELUK PAKEDAI","TERENTANG"],"KAB. LANDAK":["AIR BESAR","BANYUKE HULU","JELIMPO","KUALA BEHE","MANDOR","MEMPAWAH HULU","MENJALIN","MENYUKE","MERANTI","NGABANG","SEBANGKI","SENGAH TEMILA","SOMPAK"],"KAB. MELAWI":["BELIMBING","BELIMBING HULU","ELLA HILIR","MENUKUNG","NANGA PINOH","PINOH SELATAN","PINOH UTARA","SAYAN","SOKAN","TANAH PINOH","TANAH PINOH BARAT"],"KAB. MEMPAWAH":["ANJONGAN","JONGKAT","MEMPAWAH HILIR","MEMPAWAH TIMUR","SADANIANG","SEGEDONG","SUNGAI KUNYIT","SUNGAI PINYUH","TOHO"],"KAB. SAMBAS":["GALING","JAWAI","JAWAI SELATAN","PALOH","PEMANGKAT","SAJAD","SAJINGAN BESAR","SALATIGA","SAMBAS","SEBAWI","SEJANGKUNG","SELAKAU","SELAKAU TIMUR","SEMPARUK","SUBAH","TANGARAN","TEBAS","TEKARANG","TELUK KERAMAT"],"KAB. SANGGAU":["BALAI","BEDUAI","BONTI","ENTIKONG","JANGKANG","KAPUAS","KEMBAYAN","MELIAU","MUKOK","NOYAN","PARINDU","SEKAYAM","TAYAN HILIR","TAYAN HULU","TOBA"],"KAB. SEKADAU":["BELITANG","BELITANG HILIR","BELITANG HULU","NANGA MAHAP","NANGA TAMAN","SEKADAU HILIR","SEKADAU HULU"],"KAB. SINTANG":["AMBALAU","BINJAI HULU","DEDAI","KAYAN HILIR","KAYAN HULU","KELAM PERMAI","KETUNGAU HILIR","KETUNGAU HULU","KETUNGAU TENGAH","SEPAUK","SERAWAI","SINTANG","SUNGAI TEBELIAN","TEMPUNAK"],"KOTA PONTIANAK":["PONTIANAK BARAT","PONTIANAK KOTA","PONTIANAK SELATAN","PONTIANAK TENGGARA","PONTIANAK TIMUR","PONTIANAK UTARA"],"KOTA SINGKAWANG":["SINGKAWANG BARAT","SINGKAWANG SELATAN","SINGKAWANG TENGAH","SINGKAWANG TIMUR","SINGKAWANG UTARA"]},"KALIMANTAN SELATAN":{"KAB. BALANGAN":["AWAYAN","BATU MANDI","HALONG","JUAI","LAMPIHONG","PARINGIN","PARINGIN SELATAN","TEBING TINGGI"],"KAB. BANJAR":["ALUH - ALUH","ARANIO","ASTAMBUL","BERUNTUNG BARU","CINTAPURI DARUSSALAM","GAMBUT","KARANG INTAN","KERTAK HANYAR","MARTAPURA","MARTAPURA BARAT","MARTAPURA TIMUR","MATARAMAN","PARAMASAN","PENGARON","SAMBUNG MAKMUR","SIMPANG EMPAT","SUNGAI PINANG","SUNGAI TABUK","TATAH MAKMUR","TELAGA BAUNTUNG"],"KAB. BARITO KUALA":["ALALAK","ANJIR MUARA","ANJIR PASAR","BAKUMPAI","BARAMBAI","BELAWANG","CERBON","JEJANGKIT","KURIPAN","MANDASTANA","MARABAHAN","MEKARSARI","RANTAU BADAUH","TABUKAN","TABUNGANEN","TAMBAN","WANARAYA"],"KAB. HULU SUNGAI SELATAN":["ANGKINANG","DAHA BARAT","DAHA SELATAN","DAHA UTARA","KALUMPANG","KANDANGAN","LOKSADO","PADANG BATUNG","SIMPUR","SUNGAI RAYA","TELAGA LANGSAT"],"KAB. HULU SUNGAI TENGAH":["BARABAI","BATANG ALAI SELATAN","BATANG ALAI TIMUR","BATANG ALAI UTARA","BATU BENAWA","HANTAKAN","HARUYAN","LABUAN AMAS SELATAN","LABUAN AMAS UTARA","LIMPASU","PANDAWAN"],"KAB. HULU SUNGAI UTARA":["AMUNTAI SELATAN","AMUNTAI TENGAH","AMUNTAI UTARA","BABIRIK","BANJANG","DANAU PANGGANG","HAUR GADING","PAMINGGIR","SUNGAI PANDAN","SUNGAI TABUKAN"],"KAB. KOTABARU":["HAMPANG","KELUMPANG BARAT","KELUMPANG HILIR","KELUMPANG HULU","KELUMPANG SELATAN","KELUMPANG TENGAH","KELUMPANG UTARA","PAMUKAN BARAT","PAMUKAN SELATAN","PAMUKAN UTARA","PULAU LAUT BARAT","PULAU LAUT KEPULAUAN","PULAU LAUT SELATAN","PULAU LAUT SIGAM","PULAU LAUT TANJUNG SELAYAR","PULAU LAUT TENGAH","PULAU LAUT TIMUR","PULAU LAUT UTARA","PULAU SEBUKU","PULAU SEMBILAN","SAMPANAHAN","SUNGAI DURIAN"],"KAB. TABALONG":["BANUA LAWAS","BINTANG ARA","HARUAI","JARO","KELUA","MUARA HARUS","MUARA UYA","MURUNG PUDAK","PUGAAN","TANJUNG","TANTA","UPAU"],"KAB. TANAH BUMBU":["ANGSANA","BATU LICIN","KARANG BINTANG","KURANJI","KUSAN HILIR","KUSAN HULU","KUSAN TENGAH","MANTEWE","SATUI","SIMPANG EMPAT","SUNGAI LOBAN","TELUK KEPAYANG"],"KAB. TANAH LAUT":["BAJUIN","BATI-BATI","BATU AMPAR","BUMI MAKMUR","JORONG","KINTAP","KURAU","PANYIPATAN","PELAIHARI","TAKISUNG","TAMBANG ULANG"],"KAB. TAPIN":["BAKARANGAN","BINUANG","BUNGUR","CANDI LARAS SELATAN","CANDI LARAS UTARA","HATUNGUN","LOKPAIKAT","PIANI","SALAM BABARIS","TAPIN SELATAN","TAPIN TENGAH","TAPIN UTARA"],"KOTA BANJARBARU":["BANJARBARU SELATAN","BANJARBARU UTARA","CEMPAKA","LANDASAN ULIN","LIANG ANGGANG"],"KOTA BANJARMASIN":["BANJARMASIN BARAT","BANJARMASIN SELATAN","BANJARMASIN TENGAH","BANJARMASIN TIMUR","BANJARMASIN UTARA"]},"KALIMANTAN TENGAH":{"KAB. BARITO SELATAN":["DUSUN HILIR","DUSUN SELATAN","DUSUN UTARA","GUNUNG BINTANG AWAI","JENAMAS","KARAU KUALA"],"KAB. BARITO TIMUR":["AWANG","BENUA LIMA","DUSUN TENGAH","DUSUN TIMUR","KARUSEN JANANG","PAJU EPAT","PAKU","PATANGKEP TUTUI","PEMATANG KARAU","RAREN BATUAH"],"KAB. BARITO UTARA":["GUNUNG PUREI","GUNUNG TIMANG","LAHEI","LAHEI BARAT","MONTALLAT","TEWEH  BARU","TEWEH SELATAN","TEWEH TENGAH","TEWEH TIMUR"],"KAB. GUNUNG MAS":["DAMANG BATU","KAHAYAN HULU UTARA","KURUN","MANUHING","MANUHING RAYA","MIHING RAYA","MIRI MANASA","RUNGAN","RUNGAN BARAT","RUNGAN HULU","SEPANG","TEWAH"],"KAB. KAPUAS":["BASARANG","BATAGUH","DADAHUP","KAPUAS BARAT","KAPUAS HILIR","KAPUAS HULU","KAPUAS KUALA","KAPUAS MURUNG","KAPUAS TENGAH","KAPUAS TIMUR","MANDAU TALAWANG","MANTANGAI","PASAK TALAWANG","PULAU PETAK","SELAT","TAMBAN CATUR","TIMPAH"],"KAB. KATINGAN":["BUKIT RAYA","KAMIPANG","KATINGAN HILIR","KATINGAN HULU","KATINGAN KUALA","KATINGAN TENGAH","MARIKIT","MENDAWAI","PETAK MALAI","PULAU MALAN","SANAMAN MANTIKEI","TASIK PAYAWAN","TEWANG SANGALANG GARING"],"KAB. KOTAWARINGIN BARAT":["ARUT SELATAN","ARUT UTARA","KOTAWARINGIN LAMA","KUMAI","PANGKALAN BANTENG","PANGKALAN LADA"],"KAB. KOTAWARINGIN TIMUR":["ANTANG KALANG","BAAMANG","BUKIT SANTUAI","CEMPAGA","CEMPAGA HULU","KOTA BESI","MENTAWA BARU/KETAPANG","MENTAYA HILIR SELATAN","MENTAYA HILIR UTARA","MENTAYA HULU","PARENGGEAN","PULAU HANAUT","SERANAU","TELAGA ANTANG","TELAWANG","TELUK SAMPIT","TUALAN HULU"],"KAB. LAMANDAU":["BATANGKAWA","BELANTIKAN RAYA","BULIK","BULIK TIMUR","DELANG","LAMANDAU","MENTHOBI RAYA","SEMATU JAYA"],"KAB. MURUNG RAYA":["BARITO TUHUP RAYA","LAUNG TUHUP","MURUNG","PERMATA INTAN","SERIBU RIAM","SUMBER BARITO","SUNGAI BABUAT","TANAH SIANG","TANAH SIANG SELATAN","UUT MURUNG"],"KAB. PULANG PISAU":["BANAMA TINGANG","JABIREN RAYA","KAHAYAN HILIR","KAHAYAN KUALA","KAHAYAN TENGAH","MALIKU","PANDIH BATU","SEBANGAU KUALA"],"KAB. SERUYAN":["BATU AMPAR","DANAU SELULUK","DANAU SEMBULUH","HANAU","SERUYAN HILIR","SERUYAN HILIR TIMUR","SERUYAN HULU","SERUYAN RAYA","SERUYAN TENGAH","SULING TAMBUN"],"KAB. SUKAMARA":["BALAI RIAM","JELAI","PANTAI LUNCI","PERMATA KECUBUNG","SUKAMARA"],"KOTA PALANGKARAYA":["BUKIT BATU","JEKAN RAYA","PAHANDUT","RAKUMPIT","SABANGAU"]},"KALIMANTAN TIMUR":{"KAB. BERAU":["BATU PUTIH","BIATAN","BIDUK BIDUK","GUNUNG TABUR","KELAY","MARATUA","PULAU DERAWAN","SAMBALIUNG","SEGAH","TABALAR","TALISAYAN","TANJUNG REDEB","TELUK BAYUR"],"KAB. KUTAI BARAT":["BARONG TONGKOK","BENTIAN BESAR","BONGAN","DAMAI","JEMPANG","LINGGANG BIGUNG","LONG IRAM","MELAK","MOOK MANAAR BULATN","MUARA LAWA","MUARA PAHU","NYUATAN","PENYINGGAHAN","SEKOLAQ DARAT","SILUQ NGURAI","TERING"],"KAB. KUTAI KARTANEGARA":["ANGGANA","KEMBANG JANGGUT","KENOHAN","KOTA BANGUN","KOTA BANGUN DARAT","LOA JANAN","LOA KULU","MARANG KAYU","MUARA BADAK","MUARA JAWA","MUARA KAMAN","MUARA MUNTAI","MUARA WIS","SAMBOJA","SAMBOJA BARAT","SANGA-SANGA","SEBULU","TABANG","TENGGARONG","TENGGARONG SEBERANG"],"KAB. KUTAI TIMUR":["BATU AMPAR","BENGALON","BUSANG","KALIORANG","KARANGAN","KAUBUN","KONGBENG","LONG MESANGAT","MUARA ANCALONG","MUARA BENGKAL","MUARA WAHAU","RANTAU PULUNG","SANDARAN","SANGATTA SELATAN","SANGATTA UTARA","SANGKULIRANG","TELEN","TELUK PANDAN"],"KAB. MAHAKAM ULU":["LAHAM","LONG APARI","LONG BAGUN","LONG HUBUNG","LONG PAHANGAI"],"KAB. PASER":["BATU ENGAU","BATU SOPANG","KUARO","LONG IKIS","LONG KALI","MUARA KOMAM","MUARA SAMU","PASIR BELENGKONG","TANAH GROGOT","TANJUNG HARAPAN"],"KAB. PENAJAM PASER UTARA":["BABULU","PENAJAM","SEPAKU","WARU"],"KOTA BALIKPAPAN":["BALIKPAPAN BARAT","BALIKPAPAN KOTA","BALIKPAPAN SELATAN","BALIKPAPAN TENGAH","BALIKPAPAN TIMUR","BALIKPAPAN UTARA"],"KOTA BONTANG":["BONTANG BARAT","BONTANG SELATAN","BONTANG UTARA"],"KOTA SAMARINDA":["LOA JANAN ILIR","PALARAN","SAMARINDA ILIR","SAMARINDA KOTA","SAMARINDA SEBERANG","SAMARINDA ULU","SAMARINDA UTARA","SAMBUTAN","SUNGAI KUNJANG","SUNGAI PINANG"]},"KALIMANTAN UTARA":{"KAB. BULUNGAN":["BUNYU","PESO","PESO HILIR","SEKATAK","TANJUNG PALAS","TANJUNG PALAS BARAT","TANJUNG PALAS TENGAH","TANJUNG PALAS TIMUR","TANJUNG PALAS UTARA","TANJUNG SELOR"],"KAB. MALINAU":["BAHAU HULU","KAYAN HILIR","KAYAN HULU","KAYAN SELATAN","MALINAU BARAT","MALINAU KOTA","MALINAU SELATAN","MALINAU SELATAN HILIR","MALINAU SELATAN HULU","MALINAU UTARA","MENTARANG","MENTARANG HULU","PUJUNGAN","SUNGAI BOH","SUNGAI TUBU"],"KAB. NUNUKAN":["KRAYAN","KRAYAN BARAT","KRAYAN SELATAN","KRAYAN TENGAH","KRAYAN TIMUR","LUMBIS","LUMBIS HULU","LUMBIS OGONG","LUMBIS PANSIANGAN","NUNUKAN","NUNUKAN SELATAN","SEBATIK","SEBATIK BARAT","SEBATIK TENGAH","SEBATIK TIMUR","SEBATIK UTARA","SEBUKU","SEI MENGGARIS","SEMBAKUNG","SEMBAKUNG ATULAI","TULIN ONSOI"],"KAB. TANA TIDUNG":["BETAYAU","MURUK RIAN","SESAYAP","SESAYAP HILIR","TANA LIA"],"KOTA TARAKAN":["TARAKAN BARAT","TARAKAN TENGAH","TARAKAN TIMUR","TARAKAN UTARA"]},"KEPULAUAN BANGKA BELITUNG":{"KAB. BANGKA":["BAKAM","BELINYU","MENDO BARAT","MERAWANG","PEMALI","PUDING BESAR","RIAU SILIP","SUNGAILIAT"],"KAB. BANGKA BARAT":["JEBUS","KELAPA","MENTOK","PARITTIGA","SIMPANG TERITIP","TEMPILANG"],"KAB. BANGKA SELATAN":["AIR GEGAS","KEPULAUAN PONGOK","LEPAR PONGOK","PAYUNG","PULAU BESAR","SIMPANG RIMBA","TOBOALI","TUKAK SADAI"],"KAB. BANGKA TENGAH":["KOBA","LUBUK BESAR","NAMANG","PANGKALAN BARU","SIMPANG KATIS","SUNGAI SELAN"],"KAB. BELITUNG":["BADAU","MEMBALONG","SELAT NASIK","SIJUK","TANJUNGPANDAN"],"KAB. BELITUNG TIMUR":["DAMAR","DENDANG","GANTUNG","KELAPA KAMPIT","MANGGAR","SIMPANG PESAK","SIMPANG RENGGIANG"],"KOTA PANGKAL PINANG":["BUKIT INTAN","GABEK","GERUNGGANG","GIRIMAYA","PANGKAL BALAM","RANGKUI","TAMAN SARI"]},"KEPULAUAN RIAU":{"KAB. BINTAN":["BINTAN PESISIR","BINTAN TIMUR","BINTAN UTARA","GUNUNG KIJANG","MANTANG","SERI KUALA LOBAM","TAMBELAN","TELUK BINTAN","TELUK SEBONG","TOAPAYA"],"KAB. KARIMUN":["BELAT","BURU","DURAI","KARIMUN","KUNDUR","KUNDUR BARAT","KUNDUR UTARA","MERAL","MERAL BARAT","MORO","SELAT GELAM","SUGIE BESAR","TEBING","UNGAR"],"KAB. KEPULAUAN ANAMBAS":["JEMAJA","JEMAJA BARAT","JEMAJA TIMUR","KUTE SIANTAN","PALMATAK","SIANTAN","SIANTAN SELATAN","SIANTAN TENGAH","SIANTAN TIMUR","SIANTAN UTARA"],"KAB. LINGGA":["BAKUNG SERUMPUN","KATANG BIDARE","KEPULAUAN POSEK","LINGGA","LINGGA TIMUR","LINGGA UTARA","SELAYAR","SENAYANG","SINGKEP","SINGKEP BARAT","SINGKEP PESISIR","SINGKEP SELATAN","TEMIANG PESISIR"],"KAB. NATUNA":["BUNGURAN BARAT","BUNGURAN BATUBI","BUNGURAN SELATAN","BUNGURAN TENGAH","BUNGURAN TIMUR","BUNGURAN TIMUR LAUT","BUNGURAN UTARA","MIDAI","PULAU LAUT","PULAU PANJANG","PULAU SELUAN","PULAU TIGA","PULAU TIGA BARAT","SERASAN","SERASAN TIMUR","SUAK MIDAI","SUBI"],"KOTA BATAM":["BATAM KOTA","BATU AJI","BATU AMPAR","BELAKANG PADANG","BENGKONG","BULANG","GALANG","LUBUK BAJA","NONGSA","SAGULUNG","SEI BEDUK","SEKUPANG"],"KOTA TANJUNG PINANG":["BUKIT BESTARI","TANJUNGPINANG BARAT","TANJUNGPINANG KOTA","TANJUNGPINANG TIMUR"]},"LAMPUNG":{"KAB. LAMPUNG BARAT":["AIR HITAM","BALIK BUKIT","BANDAR NEGERI SUOH","BATU BRAK","BATU KETULIS","BELALAU","GEDUNG SURIAN","KEBUN TEBU","LUMBOK SEMINUNG","PAGAR DEWA","SEKINCAU","SUKAU","SUMBER JAYA","SUOH","WAY TENONG"],"KAB. LAMPUNG SELATAN":["BAKAUHENI","CANDIPURO","JATI AGUNG","KALIANDA","KATIBUNG","KETAPANG","MERBAU MATARAM","NATAR","PALAS","PENENGAHAN","RAJABASA","SIDOMULYO","SRAGI","TANJUNG BINTANG","TANJUNG SARI","WAY PANJI","WAY SULAN"],"KAB. LAMPUNG TENGAH":["ANAK RATU AJI","ANAK TUHA","BANDAR MATARAM","BANDAR SURABAYA","BANGUNREJO","BEKRI","BUMI NABUNG","BUMI RATU NUBAN","GUNUNG SUGIH","KALIREJO","KOTA GAJAH","PADANG RATU","PUBIAN","PUNGGUR","PUTRA RUMBIA","RUMBIA","SELAGAI LINGGA","SENDANG AGUNG","SEPUTIH AGUNG","SEPUTIH BANYAK","SEPUTIH MATARAM","SEPUTIH RAMAN","SEPUTIH SURABAYA","TERBANGGI BESAR","TERUSAN NUNYAI","TRIMURJO","WAY PENGUBUAN","WAY SEPUTIH"],"KAB. LAMPUNG TIMUR":["BANDAR SRIBHAWONO","BATANGHARI","BATANGHARI NUBAN","BRAJA SLEBAH","BUMI AGUNG","GUNUNG PELINDUNG","JABUNG","LABUHAN MARINGGAI","LABUHAN RATU","MARGA SEKAMPUNG","MARGATIGA","MATARAM BARU","MELINTING","METRO KIBANG","PASIR SAKTI","PEKALONGAN","PURBOLINGGO","RAMAN UTARA","SEKAMPUNG","SEKAMPUNG UDIK","SUKADANA","WAWAY KARYA","WAY BUNGUR","WAY JEPARA"],"KAB. LAMPUNG UTARA":["ABUNG  KUNANG","ABUNG BARAT","ABUNG PEKURUN","ABUNG SELATAN","ABUNG SEMULI","ABUNG SURAKARTA","ABUNG TENGAH","ABUNG TIMUR","ABUNG TINGGI","BLAMBANGAN PAGAR","BUKIT KEMUNING","BUNGA MAYANG","HULUSUNGKAI","KOTABUMI","KOTABUMI SELATAN","KOTABUMI UTARA","MUARA SUNGKAI","SUNGKAI  BARAT","SUNGKAI JAYA","SUNGKAI SELATAN","SUNGKAI TENGAH","SUNGKAI UTARA","TANJUNG RAJA"],"KAB. MESUJI":["MESUJI","MESUJI TIMUR","PANCA JAYA","RAWAJITU UTARA","SIMPANG PEMATANG","TANJUNG RAYA","WAY SERDANG"],"KAB. PESAWARAN":["GEDUNG TATAAN","KEDONDONG","MARGA PUNDUH","NEGERI KATON","PADANG CERMIN","PUNDUH PIDADA","TEGINENENG","TELUK PANDAN","WAY KHILAU","WAY LIMA","WAY RATAI"],"KAB. PESISIR BARAT":["BANGKUNAT","KARYA PENGGAWA","KRUI SELATAN","LEMONG","NGAMBUR","NGARAS","PESISIR SELATAN","PESISIR TENGAH","PESISIR UTARA","PULAU PISANG","WAY KRUI"],"KAB. PRINGSEWU":["ADI LUWIH","AMBARAWA","BANYUMAS","GADING REJO","PAGELARAN","PAGELARAN UTARA","PARDASUKA","PRINGSEWU","SUKOHARJO"],"KAB. TANGGAMUS":["AIR NANINGAN","BANDAR NEGERI SEMUONG","BULOK","CUKUH BALAK","GISTING","GUNUNG ALIP","KELUMBAYAN","KELUMBAYAN BARAT","KOTA AGUNG","KOTA AGUNG BARAT","KOTA AGUNG TIMUR","LIMAU","PEMATANG SAWA","PUGUNG","PULAU PANGGUNG","SEMAKA","SUMBEREJO","TALANG PADANG","ULUBELU","WONOSOBO"],"KAB. TULANG BAWANG":["BANJAR AGUNG","BANJAR BARU","BANJAR MARGO","DENTE TELADAS","GEDUNG AJI","GEDUNG AJI BARU","GEDUNG MENENG","MENGGALA","MENGGALA TIMUR","MERAKSA AJI","PENAWAR AJI","PENAWAR TAMA","RAWA PITU","RAWAJITU SELATAN","RAWAJITU TIMUR"],"KAB. TULANG BAWANG BARAT":["BATU PUTIH","GUNUNG AGUNG","GUNUNG TERANG","LAMBU KIBANG","PAGAR DEWA","TULANG BAWANG TENGAH","TULANG BAWANG UDIK","TUMI JAJAR","WAY KENANGA"],"KAB. WAY KANAN":["BAHUGA","BANJIT","BARADATU","BLAMBANGAN UMPU","BUAY  BAHUGA","BUMI AGUNG","GUNUNG LABUHAN","KASUI","NEGARA BATIN","NEGERI AGUNG","NEGERI BESAR","PAKUAN RATU","REBANG TANGKAS","UMPU SEMENGUK","WAY TUBA"],"KOTA BANDAR LAMPUNG":["BUMI WARAS","ENGGAL","KEDAMAIAN","KEDATON","KEMILING","LABUHAN RATU","LANGKAPURA","PANJANG","RAJABASA","SUKABUMI","SUKARAME","TANJUNG KARANG BARAT","TANJUNG KARANG PUSAT","TANJUNG KARANG TIMUR","TANJUNG SENANG","TELUK BETUNG BARAT","TELUK BETUNG SELATAN","TELUK BETUNG UTARA","TELUKBETUNG TIMUR","WAY HALIM"],"KOTA METRO":["METRO BARAT","METRO PUSAT","METRO SELATAN","METRO TIMUR","METRO UTARA"]},"MALUKU":{"KAB. BURU":["AIR BUAYA","BATA BUAL","FENA LEISELA","LILIALY","LOLONG GUBA","NAMLEA","TELUK KAIELY","WAEAPO","WAELATA","WAPLAU"],"KAB. BURU SELATAN":["AMBALAU","FENA FAFAN","KEPALA MADAN","LEKSULA","NAMROLE","WAESAMA"],"KAB. KEPULAUAN ARU":["ARU SELATAN","ARU SELATAN TIMUR","ARU SELATAN UTARA","ARU TENGAH","ARU TENGAH SELATAN","ARU TENGAH TIMUR","ARU UTARA","ARU UTARA TIMUR BATULEY","PULAU-PULAU ARU","SIR-SIR"],"KAB. KEPULAUAN TANIMBAR":["FORDATA","KORMOMOLIN","MOLU MARU","NIRUNMAS","SELARU","TANIMBAR SELATAN","TANIMBAR UTARA","WER MAKTIAN","WER TAMRIAN","WUAR LABOBAR"],"KAB. MALUKU BARAT DAYA":["BABAR BARAT","BABAR TIMUR","DAMER","DAWELOOR DAWERA","KEPULAUAN LUANG SERMATA","KEPULAUAN ROMA","KISAR SELATAN","KISAR UTARA","LAKOR","LETTI","MOA","PULAU MASELA","PULAU WETANG","WETAR BARAT","WETAR SELATAN","WETAR TIMUR","WETAR UTARA"],"KAB. MALUKU TENGAH":["AMAHAI","BANDA","KOTA MASOHI","LEIHITU","LEIHITU BARAT","NUSALAUT","P. HARUKU","SALAHUTU","SAPARUA","SAPARUA TIMUR","SERAM UTARA","SERAM UTARA BARAT","SERAM UTARA TIMUR KOBI","SERAM UTARA TIMUR SETI","TEHORU","TELUK ELPAPUTIH","TELUTIH","TEON NILA SERUA"],"KAB. MALUKU TENGGARA":["HOAT SORBAY","KEI BESAR","KEI BESAR SELATAN","KEI BESAR SELATAN BARAT","KEI BESAR UTARA BARAT","KEI BESAR UTARA TIMUR","KEI KECIL","KEI KECIL BARAT","KEI KECIL TIMUR","KEI KECIL TIMUR SELATAN","MANYEUW"],"KAB. SERAM BAGIAN BARAT":["AMALATU","ELPAPUTIH","HUAMUAL","HUAMUAL BELAKANG","INAMOSOL","KAIRATU","KAIRATU BARAT","KEPULAUAN MANIPA","SERAM BARAT","TANIWEL","TANIWEL TIMUR"],"KAB. SERAM BAGIAN TIMUR":["BULA","BULA BARAT","GOROM TIMUR","KESUI WATUBELA","KIAN DARAT","KILMURY","PULAU GOROM","PULAU PANJANG","SERAM TIMUR","SIRITAUN WIDA TIMUR","SIWALALAT","TELUK WARU","TEOR","TUTUK TOLU","UKAR SENGAN","WERINAMA"],"KOTA AMBON":["LEITIMUR SELATAN","NUSANIWE","SIRIMAU","TELUK AMBON","TELUK AMBON BAGUALA"],"KOTA TUAL":["KUR SELATAN","PP. KUR","PULAU DULLAH SELATAN","PULAU DULLAH UTARA","TAYANDO TAM"]},"MALUKU UTARA":{"KAB. HALMAHERA BARAT":["IBU","IBU SELATAN","JAILOLO","JAILOLO SELATAN","LOLODA","LOLODA TENGAH","SAHU","SAHU TIMUR","TABARU"],"KAB. HALMAHERA SELATAN":["BACAN","BACAN BARAT","BACAN BARAT UTARA","BACAN SELATAN","BACAN TIMUR","BACAN TIMUR SELATAN","BACAN TIMUR TENGAH","BATANG LOMANG","GANE BARAT","GANE BARAT SELATAN","GANE BARAT UTARA","GANE TIMUR","GANE TIMUR SELATAN","GANE TIMUR TENGAH","KASIRUTA BARAT","KASIRUTA TIMUR","KAYOA","KAYOA BARAT","KAYOA SELATAN","KAYOA UTARA","KEPULAUAN JORONGA","MAKIAN BARAT","MANDIOLI SELATAN","MANDIOLI UTARA","OBI","OBI BARAT","OBI SELATAN","OBI TIMUR","OBI UTARA","PULAU MAKIAN"],"KAB. HALMAHERA TENGAH":["PATANI","PATANI BARAT","PATANI TIMUR","PATANI UTARA","PULAU GEBE","WEDA","WEDA SELATAN","WEDA TENGAH","WEDA TIMUR","WEDA UTARA"],"KAB. HALMAHERA TIMUR":["KOTA MABA","MABA","MABA SELATAN","MABA TENGAH","MABA UTARA","WASILE","WASILE SELATAN","WASILE TENGAH","WASILE TIMUR","WASILE UTARA"],"KAB. HALMAHERA UTARA":["GALELA","GALELA BARAT","GALELA SELATAN","GALELA UTARA","KAO","KAO BARAT","KAO TELUK","KAO UTARA","LOLODA KEPULAUAN","LOLODA UTARA","MALIFUT","TOBELO","TOBELO BARAT","TOBELO SELATAN","TOBELO TENGAH","TOBELO TIMUR","TOBELO UTARA"],"KAB. KEPULAUAN SULA":["MANGOLI BARAT","MANGOLI SELATAN","MANGOLI TENGAH","MANGOLI TIMUR","MANGOLI UTARA","MANGOLI UTARA TIMUR","SANANA","SANANA UTARA","SULA BESI BARAT","SULA BESI TENGAH","SULABESI SELATAN","SULABESI TIMUR"],"KAB. PULAU MOROTAI":["MOROTAI JAYA","MOROTAI SELATAN","MOROTAI SELATAN BARAT","MOROTAI TIMUR","MOROTAI UTARA","PULAU RAO"],"KAB. PULAU TALIABU":["LEDE","TABONA","TALIABU BARAT","TALIABU BARAT LAUT","TALIABU SELATAN","TALIABU TIMUR","TALIABU TIMUR SELATAN","TALIABU UTARA"],"KOTA TERNATE":["MOTI","PULAU BATANG DUA","PULAU HIRI","PULAU TERNATE","TERNATE BARAT","TERNATE SELATAN","TERNATE TENGAH","TERNATE UTARA"],"KOTA TIDORE KEPULAUAN":["OBA","OBA SELATAN","OBA TENGAH","OBA UTARA","TIDORE","TIDORE SELATAN","TIDORE TIMUR","TIDORE UTARA"]},"NUSA TENGGARA BARAT":{"KAB. BIMA":["AMBALAWI","BELO","BOLO","DONGGO","LAMBITU","LAMBU","LANGGUDU","MADA PANGGA","MONTA","PALIBELO","PARADO","SANGGAR","SAPE","SOROMANDI","TAMBORA","WAWO","WERA","WOHA"],"KAB. DOMPU":["DOMPU","HU'U","KEMPO","KILO","MANGGALEWA","PAJO","PEKAT","WOJA"],"KAB. LOMBOK BARAT":["BATU LAYAR","GERUNG","GUNUNG SARI","KEDIRI","KURIPAN","LABU API","LEMBAR","LINGSAR","NARMADA","SEKOTONG"],"KAB. LOMBOK TENGAH":["BATUKLIANG","BATUKLIANG UTARA","JANAPRIA","JONGGAT","KOPANG","PRAYA","PRAYA BARAT","PRAYA BARAT DAYA","PRAYA TENGAH","PRAYA TIMUR","PRINGGARATA","PUJUT"],"KAB. LOMBOK TIMUR":["AIKMEL","JEROWARU","KERUAK","LABUHAN HAJI","LENEK","MASBAGIK","MONTONG GADING","PRINGGABAYA","PRINGGASELA","SAKRA","SAKRA BARAT","SAKRA TIMUR","SAMBELIA","SELONG","SEMBALUN","SIKUR","SUELA","SUKAMULIA","SURALAGA","TERARA","WANASABA"],"KAB. LOMBOK UTARA":["BAYAN","GANGGA","KAYANGAN","PEMENANG","TANJUNG"],"KAB. SUMBAWA":["ALAS","ALAS BARAT","BATULANTEH","BUER","EMPANG","LABANGKA","LABUHAN BADAS","LANTUNG","LAPE","LENANGGUAR","LOPOK","LUNYUK","MARONGE","MOYO HILIR","MOYO HULU","MOYO UTARA","ORONG TELU","PLAMPANG","RHEE","ROPANG","SUMBAWA","TARANO","UNTER IWES","UTAN"],"KAB. SUMBAWA BARAT":["BRANG ENE","BRANG REA","JEREWEH","MALUK","POTO TANO","SEKONGKANG","SETELUK","TALIWANG"],"KOTA BIMA":["ASAKOTA","MPUNDA","RABA","RASANAE BARAT","RASANAE TIMUR"],"KOTA MATARAM":["AMPENAN","CAKRANEGARA","MATARAM","SANDUBAYA","SEKARBELA","SELAPARANG"]},"NUSA TENGGARA TIMUR":{"KAB TIMOR TENGAH SELATAN":["AMANATUN SELATAN","AMANATUN UTARA","AMANUBAN BARAT","AMANUBAN SELATAN","AMANUBAN TENGAH","AMANUBAN TIMUR","BATU PUTIH","BOKING","FATUKOPA","FATUMNASI","FAUTMOLO","KIE","KOKBAUN","KOLBANO","KOT'OLIN","KOTA SOE","KUALIN","KUAN FATU","KUATNANA","MOLLO BARAT","MOLLO SELATAN","MOLLO TENGAH","MOLLO UTARA","NOEBANA","NOEBEBA","NUNBENA","NUNKOLO","OENINO","POLEN","SANTIAN","TOBU","TOIANAS"],"KAB. ALOR":["ABAD SELATAN","ALOR BARAT DAYA","ALOR BARAT LAUT","ALOR SELATAN","ALOR TENGAH UTARA","ALOR TIMUR","ALOR TIMUR LAUT","KABOLA","LEMBUR","MATARU","PANTAR","PANTAR BARAT","PANTAR BARAT LAUT","PANTAR TENGAH","PANTAR TIMUR","PULAU PURA","PUREMAN","TELUK MUTIARA"],"KAB. BELU":["ATAMBUA","ATAMBUA BARAT","ATAMBUA SELATAN","KAKULUK MESAK","LAMAKNEN","LAMAKNEN SELATAN","LASIOLAT","NANAET DUABESI","RAI MANUK","RAIHAT","TASIFETO BARAT","TASIFETO TIMUR"],"KAB. ENDE":["DETUKELI","DETUSOKO","ENDE","ENDE SELATAN","ENDE TENGAH","ENDE TIMUR","ENDE UTARA","KELIMUTU","KOTABARU","LEPEMBUSU KELISOKE","LIO TIMUR","MAUKARO","MAUROLE","NANGAPANDA","NDONA","NDONA TIMUR","NDORI","PULAU ENDE","WEWARIA","WOLOJITA","WOLOWARU"],"KAB. FLORES TIMUR":["ADONARA","ADONARA BARAT","ADONARA TENGAH","ADONARA TIMUR","DEMON PAGONG","ILE BOLENG","ILE MANDIRI","ILEBURA","KELUBAGOLIT","LARANTUKA","LEWO LEMA","SOLOR BARAT","SOLOR SELATAN","SOLOR TIMUR","TANJUNG BUNGA","TITEHENA","WITIHAMA","WOTAN ULU MADO","WULANGGITANG"],"KAB. KUPANG":["AMABI OEFETO","AMABI OEFETO TIMUR","AMARASI","AMARASI BARAT","AMARASI SELATAN","AMARASI TIMUR","AMFOANG BARAT DAYA","AMFOANG BARAT LAUT","AMFOANG SELATAN","AMFOANG TENGAH","AMFOANG TIMUR","AMFOANG UTARA","FATULEU","FATULEU BARAT","FATULEU TENGAH","KUPANG BARAT","KUPANG TENGAH","KUPANG TIMUR","NEKAMESE","SEMAU","SEMAU SELATAN","SULAMU","TAEBENU","TAKARI"],"KAB. LEMBATA":["ATADEI","BUYASARI","ILE APE","ILE APE TIMUR","LEBATUKAN","NAGAWUTUNG","NUBATUKAN","OMESURI","WULANDONI"],"KAB. MALAKA":["BOTIN LEOBELE","IO KUFEU","KOBALIMA","KOBALIMA TIMUR","LAEN MANEN","MALAKA BARAT","MALAKA TENGAH","MALAKA TIMUR","RINHAT","SASITA MEAN","WELIMAN","WEWIKU"],"KAB. MANGGARAI":["CIBAL","CIBAL BARAT","LANGKE REMBONG","LELAK","RAHONG UTARA","REOK","REOK BARAT","RUTENG","SATAR MESE","SATAR MESE BARAT","SATAR MESE UTARA","WAE RII"],"KAB. MANGGARAI BARAT":["BOLENG","KOMODO","KUWUS","KUWUS BARAT","LEMBOR","LEMBOR SELATAN","MACANG PACAR","MBELILING","NDOSO","PACAR","SANO NGGOANG","WELAK"],"KAB. MANGGARAI TIMUR":["BORONG","CONGKAR","ELAR","ELAR SELATAN","KOTA KOMBA","KOTA KOMBA UTARA","LAMBA LEDA","LAMBA LEDA SELATAN","LAMBA LEDA TIMUR","LAMBA LEDA UTARA","RANA MESE","SAMBI RAMPAS"],"KAB. NAGEKEO":["AESESA","AESESA SELATAN","BOAWAE","KEO TENGAH","MAUPONGGO","NANGARORO","WOLOWAE"],"KAB. NGADA":["AIMERE","BAJAWA","BAJAWA UTARA","GOLEWA","GOLEWA BARAT","GOLEWA SELATAN","INERIE","JEREBUU","RIUNG","RIUNG BARAT","SOA","WOLOMEZE"],"KAB. ROTE NDAO":["LANDU LEKO","LOAHOLU","LOBALAIN","NDAO NUSE","PANTAI BARU","ROTE BARAT","ROTE BARAT DAYA","ROTE BARAT LAUT","ROTE SELATAN","ROTE TENGAH","ROTE TIMUR"],"KAB. SABU RAIJUA":["HAWU MEHARA","RAIJUA","SABU BARAT","SABU LIAE","SABU TENGAH","SABU TIMUR"],"KAB. SIKKA":["ALOK","ALOK BARAT","ALOK TIMUR","BOLA","DORENG","HEWOKLOANG","KANGAE","KEWAPANTE","KOTING","LELA","MAGEPANDA","MAPITARA","MEGO","NELLE","NITA","PAGA","PALUE","TALIBURA","TANA WAWO","WAIBLAMA","WAIGETE"],"KAB. SUMBA BARAT":["KOTA WAIKABUBAK","LABOYA BARAT","LAMBOYA","LOLI","TANA RIGHU","WANOKAKA"],"KAB. SUMBA BARAT DAYA":["KODI","KODI BALAGHAR","KODI BANGEDO","KODI UTARA","KOTA TAMBOLAKA","LOURA","WEWEWA BARAT","WEWEWA SELATAN","WEWEWA TENGAH","WEWEWA TIMUR","WEWEWA UTARA"],"KAB. SUMBA TENGAH":["KATIKUTANA","KATIKUTANA SELATAN","MAMBORO","UMBU RATU NGGAY","UMBU RATU NGGAY BARAT","UMBU RATU NGGAY TENGAH"],"KAB. SUMBA TIMUR":["HAHARU","KAHAUNGU ETI","KAMBATA MAPAMBUHANG","KAMBERA","KANATANG","KARERA","KATALA HAMU LINGU","KOTA WAINGAPU","LEWA","LEWA TIDAHU","MAHU","MATAWAI LA PAWU","NGADU NGALA","NGGAHA ORIANGU","PABERIWAI","PAHUNGA LODU","PANDAWAI","PINUPAHAR","RINDI","TABUNDUNG","UMALULU","WULA WAIJELU"],"KAB. TIMOR TENGAH UTARA":["BIBOKI ANLEU","BIBOKI FEOTLEU","BIBOKI MOENLEU","BIBOKI SELATAN","BIBOKI TANPAH","BIBOKI UTARA","BIKOMI NILULAT","BIKOMI SELATAN","BIKOMI TENGAH","BIKOMI UTARA","INSANA","INSANA BARAT","INSANA FAFINESU","INSANA TENGAH","INSANA UTARA","KOTA KEFAMENANU","MIOMAFFO BARAT","MIOMAFFO TENGAH","MIOMAFFO TIMUR","MUSI","MUTIS","NAIBENU","NOEMUTI","NOEMUTI TIMUR"],"KOTA KUPANG":["ALAK","KELAPA LIMA","KOTA LAMA","KOTA RAJA","MAULAFA","OEBOBO"]},"PAPUA":{"KAB. BIAK NUMFOR":["AIMANDO PADAIDO","ANDEY","BIAK BARAT","BIAK KOTA","BIAK TIMUR","BIAK UTARA","BONDIFUAR","BRUYADORI","NUMFOR BARAT","NUMFOR TIMUR","ORIDEK","ORKERI","PADAIDO","POIRU","SAMOFA","SWANDIWE","WARSA","YAWOSI","YENDIDORI"],"KAB. JAYAPURA":["AIRU","DEMTA","DEPAPRE","EBUNGFAU","GRESI SELATAN","KAUREH","KEMTUK","KEMTUK GRESI","NIMBOKRANG","NIMBORAN","NIMBORAN TIMUR / NAMBLONG","RAVENIRARA","SENTANI","SENTANI BARAT","SENTANI TIMUR","UNURUM GUAY","WAIBU","YAPSI","YOKARI"],"KAB. KEEROM":["ARSO","ARSO BARAT","ARSO TIMUR","KAISENAR","MANNEM","SENGGI","SKANTO","TOWE","WARIS","WEB","YAFFI"],"KAB. KEPULAUAN YAPEN":["ANATAUREI","ANGKAISERA","KEP. AMBAI","KOSIWO","NUSAWANI","PANTURA YAPEN","POOM","PULAU KURUDU","PULAU YERUI","RAIMBAWI","TELUK AMPIMOI","WINDESI","WONAWA","YAPEN BARAT","YAPEN SELATAN","YAPEN TIMUR","YAWAKUKAT"],"KAB. MAMBERAMO RAYA":["BENUKI","MAMBERAMO ILIR","MAMBERAMO TENGAH","MAMBERAMO TENGAH TIMUR","MAMBERAMO ULU","ROFAER","SAWAI","WAROPEN ATAS"],"KAB. SARMI":["APAWER HULU","BONGGO","BONGGO TIMUR","PANTAI BARAT","PANTAI TIMUR","PANTAI TIMUR BAGIAN BARAT","SARMI","SARMI SELATAN","SARMI TIMUR","TOR ATAS"],"KAB. SUPIORI":["KEPULAUAN ARURI","SUPIORI BARAT","SUPIORI SELATAN","SUPIORI TIMUR","SUPIORI UTARA"],"KAB. WAROPEN":["DEMBA","INGGERUS","KIRIHI","MASIREI","OUDATE","RISEI SAYATI","SOYOI MAMBAI","UREI FAISEI","WAPOGA","WAROPEN BAWAH","WONTI"],"KOTA JAYAPURA":["ABEPURA","HERAM","JAYAPURA SELATAN","JAYAPURA UTARA","MUARA TAMI"]},"PAPUA BARAT":{"KAB. FAK FAK":["ARGUNI","BOMBERAY","FAKFAK","FAKFAK BARAT","FAKFAK TENGAH","FAKFAK TIMUR","FAKFAK TIMUR TENGAH","FURWAGI","KARAS","KAYAUNI","KOKAS","KRAMONGMONGGA","MBAHAMDANDARA","PARIWARI","TELUK PATIPI","TOMAGE","WARTUTIN"],"KAB. KAIMANA":["BURUWAY","KAIMANA","KAMBRAU","TELUK ARGUNI ATAS","TELUK ARGUNI BAWAH","TELUK ETNA","YAMOR"],"KAB. MANOKWARI":["AIMASI","MANOKWARI BARAT","MANOKWARI SELATAN","MANOKWARI TIMUR","MANOKWARI UTARA","MASNI","MASNI UTARA","MOKWAM","MORUJ MEGA","PRAFI","SIDEY","TANAH RUBUH","WARMARE","WASIRAWI"],"KAB. MANOKWARI SELATAN":["DATARAN ISIM","MOMI WAREN","NENEY","ORANSBARI","RANSIKI","TAHOTA"],"KAB. PEGUNUNGAN ARFAK":["ANGGI","ANGGI GIDA","CATUBOUW","DIDOHU","HINGK","MEMBEY","MINYAMBOUW","SURUREY","TAIGE","TESTEGA"],"KAB. TELUK BINTUNI":["ARANDAY","AROBA","BABO","BINTUNI","BISCOOP","DATARAN BEIMES","FAFURWAR","KAITARO","KAMUNDAN","KURI","MANIMERI","MASYETA","MERDEY","MEYADO","MOSKONA BARAT","MOSKONA SELATAN","MOSKONA TIMUR","MOSKONA UTARA","SUMURI","TEMBUNI","TOMU","TUHIBA","WAMESA","WERIAGAR"],"KAB. TELUK WONDAMA":["DUAIRI","KURI WAMESA","NAIKERE","NIKIWAR","RASIEY","ROON","ROSWAR","RUMBERPON","SOUG JAYA","WAMESA","WASIOR","WINDESI","WONDIBOY"]},"PAPUA BARAT DAYA":{"KAB. MAYBRAT":["AIFAT","AIFAT SELATAN","AIFAT TIMUR","AIFAT TIMUR JAUH","AIFAT TIMUR SELATAN","AIFAT TIMUR TENGAH","AIFAT UTARA","AITINYO","AITINYO BARAT/ATHABU","AITINYO RAYA","AITINYO TENGAH","AITINYO UTARA","AYAMARU","AYAMARU BARAT","AYAMARU JAYA","AYAMARU SELATAN","AYAMARU SELATAN JAYA","AYAMARU TENGAH","AYAMARU TIMUR","AYAMARU TIMUR SELATAN","AYAMARU UTARA","AYAMARU UTARA TIMUR","MARE","MARE SELATAN"],"KAB. RAJA AMPAT":["AYAU","BATANTA SELATAN","BATANTA UTARA","KEPULAUAN AYAU","KEPULAUAN SEMBILAN","KOFIAU","KOTA WAISAI","MEOS MANSAR","MISOOL","MISOOL BARAT","MISOOL SELATAN","MISOOL TIMUR","SALAWATI BARAT","SALAWATI TENGAH","SALAWATI UTARA","SUPNIN","TELUK MAYALIBIT","TIPLOL MAYALIBIT","WAIGEO BARAT","WAIGEO BARAT KEPULAUAN","WAIGEO SELATAN","WAIGEO TIMUR","WAIGEO UTARA","WARWARBOMI"],"KAB. SORONG":["AIMAS","BAGUN","BERAUR","BOTAIN","BUK","HOBARD","KLABOT","KLAMONO","KLASAFET","KLASO","KLAWAK","KLAYILI","KONHIR","MAKBON","MALABOTOM","MARIAT","MAUDUS","MAYAMUK","MOISIGIN","SAENGKEDUK","SALAWATI","SALAWATI SELATAN","SALAWATI TENGAH","SAYOSA","SAYOSA TIMUR","SEGET","SEGUN","SORONG","SUNOOK","WEMAK"],"KAB. SORONG SELATAN":["FOKOUR","INANWATAN","KAIS","KAIS DARAT","KOKODA","KOKODA UTARA","KONDA","METEMANI","MOSWAREN","SAIFI","SALKMA","SAWIAT","SEREMUK","TEMINABUAN","WAYER"],"KAB. TAMBRAUW":["ABUN","AMBERBAKEN","AMBERBAKEN BARAT","ASES","BAMUSBAMA","BIKAR","FEF","IRERES","KASI","KEBAR","KEBAR SELATAN","KEBAR TIMUR","KWESEFO","KWOOR","MANEKAR","MAWABUAN","MIYAH","MIYAH SELATAN","MORAID","MPUR","MUBRANI","SAUSAPOR","SELEMKAI","SENOPI","SYUJAK","TINGGOUW","TOBOUW","WILHEM ROUMBOUTS","YEMBUN"],"KOTA SORONG":["KLAURUNG","MALADUM MES","MALAIMSIMSA","SORONG","SORONG BARAT","SORONG KEPULAUAN","SORONG KOTA","SORONG MANOI","SORONG TIMUR","SORONG UTARA"]},"PAPUA PEGUNUNGAN":{"KAB. JAYAWIJAYA":["ASOLOGAIMA","ASOLOKOBAL","ASOTIPO","BOLAKME","BPIRI","BUGI","HUBIKIAK","HUBIKOSI","IBELE","ITLAY HISAGE","KORAGI","KURULU","LIBAREK","MAIMA","MOLAGALOME","MULIAMA","MUSATFAK","NAPUA","PELEBAGA","PISUGI","POPUGOBA","PYRAMID","SIEPKOSI","SILO KARNO DOGA","TAGIME","TAGINERI","TAILAREK","TRIKORA","USILIMO","WADANGKU","WALAIK","WALELAGAMA","WALESI","WAME","WAMENA","WESAPUT","WITA WAYA","WOLLO","WOUMA","YALENGGA"],"KAB. LANNY JAYA":["AWINA","AYUMNATI","BALINGGA","BALINGGA BARAT","BRUWA","BUGUK GONA","DIMBA","GAMELIA","GELOK BEAM","GOA BALIM","GOLLO","GUNA","GUPURA","KARU","KELULOME","KOLAWA","KULLY LANNY","KUYAWAGE","LANNYNA","MAKKI","MALAGAINERI","MELAGAI","MILIMBO","MOKONI","MUARA","NIKOGWE","NINAME","NOGI","PIRIME","POGA","TIOM","TIOM OLLO","TIOMNERI","WANO BARAT","WEREKA","WIRINGGABUT","YIGINUA","YILUK","YUGUNGWI"],"KAB. MAMBERAMO TENGAH":["ERAGAYAM","ILUGWA","KELILA","KOBAKMA","MEGAMBILIS"],"KAB. NDUGA":["ALAMA","DAL","EMBETPEM","GEAREK","GESELMA","INIKGAL","INIYE","KEGAYEM","KENYAM","KILMID","KORA","KREPKURI","KROPTAK","MAM","MAPENDUMA","MBULMU YALMA","MBUWA","MBUWA TENGAH","MEBOROK","MOBA","MUGI","NENGGEANGIN","NIRKURI","PARO","PASIR PUTIH","PIJA","WOSAK","WUSI","WUTPAGA","YAL","YENGGELO","YIGI"],"KAB. PEGUNUNGAN BINTANG":["ABOY","ALEMSOM","AWINBON","BATANI","BATOM","BIME","BORME","EIPUMEK","IWUR","JETFA","KALOMDOL","KAWOR","KIWIROK","KIWIROK TIMUR","MOFINOP","MURKIM","NONGME","OK AOM","OKBAB","OKBAPE","OKBEMTAU","OKBIBAB","OKHIKA","OKLIP","OKSAMOL","OKSEBANG","OKSIBIL","OKSOP","PAMEK","PEPERA","SERAMBAKON","TARUP","TEIRAPLU","WEIME"],"KAB. TOLIKARA":["AIR GARAM","ANAWI","AWEKU","BEWANI","BIUK","BOGONUK","BOKONDINI","BOKONERI","DANIME","DOW","DUNDU","EGIAM","GEYA","GIKA","GILUBANDU","GOYAGE","GUNDAGI","KAI","KAMBONERI","KANGGIME","KARUBAGA","KEMBU","KONDAGA","KUARI","KUBU","LIANOGOMA","NABUNAGE","NELAWI","NUMBA","NUNGGAWI","PANAGA","POGANERI","TAGIME","TAGINERI","TELENGGEME","TIMORI","UMAGI","WAKUO","WARI / TAIYEVE","WENAM","WINA","WONIKI","WUGI","WUNIN","YUKO","YUNERI"],"KAB. YAHUKIMO":["AMUMA","ANGGRUK","BOMELA","DEKAI","DIRWEMNA","DURAM","ENDOMEN","HEREAPINI","HILIPUK","HOGIO","HOLUWON","KABIANGGAMA","KAYO","KONA","KORUPUN","KOSAREK","KURIMA","KWELAMDUA","KWIKMA","LANGDA","LOLAT","MUGI","MUSAIK","NALCA","NINIA","NIPSAN","OBIO","PANGGEMA","PASEMA","PRONGGOLI","PULDAMA","SAMENAGE","SELA","SERADALA","SILIMO","SOBA","SOBAHAM","SOLOIKMA","SUMO","SUNTAMON","SURU-SURU","TALAMBO","TANGMA","UBAHAK","UBALIHI","UKHA","WALMA","WERIMA","WUSAMA","YAHULIAMBUT","YOGOSEM"],"KAB. YALIMO":["ABENAHO","APALAPSILI","BENAWA","ELELIM","WELAREK"]},"PAPUA SELATAN":{"KAB. ASMAT":["AGATS","AKAT","ASWI","ATSY","AWYU","AYIP","BECTBAMU","DER KOUMUR","FAYIT","JETSY","JOERAT","JOUTU","KOLF BRAZA","KOPAY","KOROWAY BULUANOP","PANTAI KASUARI","PULAU TIGA","SAFAN","SAWA ERMA","SIRETS","SOR EP","SUATOR","SURU-SURU","TOMOR BIRIP","UNIR SIRAU"],"KAB. BOVEN DIGOEL":["AMBATKWI","ARIMOP","BOMAKIA","FIRIWAGE","FOFI","INIYANDIT","JAIR","KAWAGIT","KI","KOMBAY","KOMBUT","KOUH","MANDOBO","MANGGELUM","MINDIPTANA","NINATI","SESNUK","SUBUR","WAROPKO","YANIRUMA"],"KAB. MAPPI":["ASSUE","BAMGI","CITAKMITAK","EDERA","HAJU","KAIBAR","MINYAMUR","NAMBIOMAN BAPAI","OBAA","PASSUE","PASSUE BAWAH","SYAHCAME","TI-ZAIN","VENAHA","YAKOMI"],"KAB. MERAUKE":["ANIMHA","ELIGOBEL","ILWAYAB","JAGEBOB","KAPTEL","KIMAAM","KONTUAR","KURIK","MALIND","MERAUKE","MUTING","NAUKENJERAI","NGGUTI","OKABA","PADUA","SEMANGGA","SOTA","TABONJI","TANAH MIRING","TUBANG","ULILIN","WAAN"]},"PAPUA TENGAH":{"KAB. DEIYAI":["BOWOBADO","KAPIRAYA","TIGI","TIGI BARAT","TIGI TIMUR"],"KAB. DOGIYAI":["DOGIYAI","KAMU","KAMU SELATAN","KAMU TIMUR","KAMU UTARA","MAPIA","MAPIA BARAT","MAPIA TENGAH","PIYAIYE","SUKIKAI SELATAN"],"KAB. INTAN JAYA":["AGISIGA","BIANDOGA","HITADIPA","HOMEYO","SUGAPA","TOMOSIGA","UGIMBA","WANDAI"],"KAB. MIMIKA":["AGIMUGA","ALAMA","AMAR","HOYA","IWAKA","JILA","JITA","KUALA KENCANA","KWAMKI NARAMA","MIMIKA BARAT","MIMIKA BARAT JAUH","MIMIKA BARAT TENGAH","MIMIKA BARU","MIMIKA TENGAH","MIMIKA TIMUR","MIMIKA TIMUR JAUH","TEMBAGAPURA","WANIA"],"KAB. NABIRE":["DIPA","KEPULAUAN MOORA","MAKIMI","MENOU","NABIRE","NABIRE BARAT","NAPAN","SIRIWO","TELUK KIMI","TELUK UMAR","UWAPA","WANGGAR","WAPOGA","YARO","YAUR"],"KAB. PANIAI":["ARADIDE","AWEIDA","BAYA BIRU","BIBIDA","BOGOBAIDA","DEIYAI MIYO","DOGOMO","DUMADAMA","EKADIDE","FAJAR TIMUR","KEBO","MUYE","NAKAMA","PANIAI BARAT","PANIAI TIMUR","PUGO DAGI","SIRIWO","TELUK DEYA","TOPIYAI","WEGE MUKA","WEGEE BINO","YAGAI","YATAMO","YOUTADI"],"KAB. PUNCAK":["AGANDUGUME","AMUNGKALPIA","BEOGA","BEOGA BARAT","BEOGA TIMUR","BINA","DERVOS","DOUVO","ERELMAKAWIA","GOME","GOME UTARA","ILAGA","ILAGA UTARA","KEMBRU","LAMBEWI","MABUGI","MAGE'ABUME","OGAMANIN","OMUKIA","ONERI","POGOMA","SINAK","SINAK BARAT","WANGBE","YUGUMUAK"],"KAB. PUNCAK JAYA":["DAGAI","DOKOME","FAWI","GUBUME","GURAGE","ILAMBURAWI","ILU","IRIMULI","KALOME","KIYAGE","LUMO","MEWOLUK","MOLANIKIME","MUARA","MULIA","NIOGA","NUME","PAGALEME","TAGANOMBAK","TINGGINAMBUT","TORERE","WAEGI","WANWI","YAMBI","YAMO","YAMONERI"]},"RIAU":{"KAB. BENGKALIS":["BANDAR LAKSAMANA","BANTAN","BATHIN SOLAPAN","BENGKALIS","BUKIT BATU","MANDAU","PINGGIR","RUPAT","RUPAT UTARA","SIAK KECIL","TALANG MUANDAU"],"KAB. INDRAGIRI HILIR":["BATANG TUAKA","CONCONG","ENOK","GAUNG","GAUNG ANAK SERKA","KATEMAN","KEMPAS","KEMUNING","KERITANG","KUALA INDRAGIRI","MANDAH","PELANGIRAN","PULAU BURUNG","RETEH","SUNGAI BATANG","TANAH MERAH","TELUK BELENGKONG","TEMBILAHAN","TEMBILAHAN HULU","TEMPULING"],"KAB. INDRAGIRI HULU":["BATANG CENAKU","BATANG GANSAL","BATANG PERANAP","KELAYANG","KUALA CENAKU","LIRIK","LUBUK BATU JAYA","PASIR PENYU","PERANAP","RAKIT KULIM","RENGAT","RENGAT BARAT","SEBERIDA","SUNGAI LALA"],"KAB. KAMPAR":["BANGKINANG","BANGKINANG KOTA","GUNUNG SAHILAN","KAMPA","KAMPAR","KAMPAR KIRI","KAMPAR KIRI HILIR","KAMPAR KIRI HULU","KAMPAR KIRI TENGAH","KAMPAR UTARA","KOTO KAMPAR HULU","KUOK","PERHENTIAN RAJA","RUMBIO JAYA","SALO","SIAK HULU","TAMBANG","TAPUNG","TAPUNG HILIR","TAPUNG HULU","XIII KOTO KAMPAR"],"KAB. KEPULAUAN MERANTI":["MERBAU","PULAU MERBAU","RANGSANG","RANGSANG BARAT","RANGSANG PESISIR","TASIK PUTRI PUYU","TEBING TINGGI","TEBING TINGGI BARAT","TEBING TINGGI TIMUR"],"KAB. KUANTAN SINGINGI":["BENAI","CERENTI","GUNUNG TOAR","HULU KUANTAN","INUMAN","KUANTAN HILIR","KUANTAN HILIR SEBERANG","KUANTAN MUDIK","KUANTAN TENGAH","LOGAS TANAH DARAT","PANGEAN","PUCUK RANTAU","SENTAJO RAYA","SINGINGI","SINGINGI HILIR"],"KAB. PELALAWAN":["BANDAR PETALANGAN","BANDAR SEIKIJANG","BUNUT","KERUMUTAN","KUALA KAMPAR","LANGGAM","PANGKALAN KERINCI","PANGKALAN KURAS","PANGKALAN LESUNG","PELALAWAN","TELUK MERANTI","UKUI"],"KAB. ROKAN HILIR":["BAGAN SINEMBAH","BAGAN SINEMBAH RAYA","BALAI JAYA","BANGKO","BANGKO PUSAKO","BATU HAMPAR","KUBU","KUBU BABUSSALAM","PASIR LIMAU KAPAS","PEKAITAN","PUJUD","RANTAU KOPAR","RIMBA MELINTANG","SIMPANG KANAN","SINABOI","TANAH PUTIH","TANAH PUTIH TANJUNG MELAWAN","TANJUNG MEDAN"],"KAB. ROKAN HULU":["BANGUN PURBA","BONAI DARUSSALAM","KABUN","KEPENUHAN","KEPENUHAN HULU","KUNTO DARUSSALAM","PAGARAN TAPAH DARUSSALAM","PENDALIAN IV KOTO","RAMBAH","RAMBAH HILIR","RAMBAH SAMO","ROKAN IV KOTO","TAMBUSAI","TAMBUSAI UTARA","TANDUN","UJUNG BATU"],"KAB. SIAK":["BUNGA RAYA","DAYUN","KANDIS","KERINCI KANAN","KOTO GASIB","LUBUK DALAM","MEMPURA","MINAS","PUSAKO","SABAK AUH","SIAK","SUNGAI APIT","SUNGAI MANDAU","TUALANG"],"KOTA DUMAI":["BUKIT KAPUR","DUMAI BARAT","DUMAI KOTA","DUMAI SELATAN","DUMAI TIMUR","MEDANG KAMPAI","SUNGAI SEMBILAN"],"KOTA PEKANBARU":["BINAWIDYA","BUKIT RAYA","KULIM","LIMAPULUH","MARPOYAN DAMAI","PAYUNG SEKAKI","PEKANBARU KOTA","RUMBAI","RUMBAI BARAT","RUMBAI TIMUR","SAIL","SENAPELAN","SUKAJADI","TENAYAN RAYA","TUAHMADANI"]},"SULAWESI BARAT":{"KAB. MAJENE":["BANGGAE","BANGGAE TIMUR","MALUNDA","PAMBOANG","SENDANA","TAMMERODO","TUBO SENDANA","ULUMANDA"],"KAB. MAMASA":["ARALLE","BALLA","BAMBANG","BUNTU MALANGKA","MAMASA","MAMBI","MEHALAAN","MESSAWA","NOSU","PANA","RANTEBULAHAN TIMUR","SESENAPADANG","SUMARORONG","TABANG","TABULAHAN","TANDUK KALUA","TAWALIAN"],"KAB. MAMUJU":["BONEHAU","KALUKKU","KALUMPANG","KEPULAUAN BALA BALAKANG","MAMUJU","PAPALANG","SAMPAGA","SIMBORO","TAPALANG","TAPALANG BARAT","TOMMO"],"KAB. MAMUJU TENGAH":["BUDONG-BUDONG","KAROSSA","PANGALE","TOBADAK","TOPOYO"],"KAB. PASANGKAYU":["BAMBAIRA","BAMBALAMOTU","BARAS","BULU TABA","DAPURANG","DURIPOKU","LARIANG","PASANGKAYU","PEDONGGA","SARJO","SARUDU","TIKKE RAYA"],"KAB. POLEWALI MANDAR":["ALU","ANREAPI","B U L O","BALANIPA","BINUANG","CAMPALAGIAN","LIMBORO","LUYO","MAPILLI","MATAKALI","MATANGNGA","POLEWALI","TAPANGO","TINAMBUNG","TUBBI TARAMANU","WONOMULYO"]},"SULAWESI SELATAN":{"KAB. BANTAENG":["BANTAENG","BISSAPPU","EREMERASA","GANTARANGKEKE","PA'JUKUKANG","SINOA","TOMPOBULU","ULUERE"],"KAB. BARRU":["BALUSU","BARRU","MALLUSETASI","PUJANANTING","SOPPENG RIAJA","TANETE RIAJA","TANETE RILAU"],"KAB. BONE":["AJANGALE","AMALI","AWANGPONE","BAREBBO","BENGO","BONTOCANI","CENRANA","CINA","DUA BOCCOE","KAHU","KAJUARA","LAMURU","LAPPARIAJA","LIBURENG","MARE","PALAKKA","PATIMPENG","PONRE","SALOMEKKO","SIBULUE","TANETE RIATTANG","TANETE RIATTANG BARAT","TANETE RIATTANG TIMUR","TELLU LIMPOE","TELLU SIATTINGE","TONRA","ULAWENG"],"KAB. BULUKUMBA":["BONTO BAHARI","BONTOTIRO","BULUKUMPA","GANTARANG","HERO LANGE-LANGE","KAJANG","KINDANG","RILAU ALE","UJUNG BULU","UJUNG LOE"],"KAB. ENREKANG":["ALLA","ANGGERAJA","BARAKA","BAROKO","BUNGIN","BUNTU BATU","CENDANA","CURIO","ENREKANG","MAIWA","MALUA","MASALLE"],"KAB. GOWA":["BAJENG","BAJENG BARAT","BAROMBONG","BIRINGBULU","BONTOLEMPANGAN","BONTOMARANNU","BONTONOMPO","BONTONOMPO SELATAN","BUNGAYA","MANUJU","PALLANGGA","PARANGLOE","PARIGI","PATTALLASSANG","SOMBA OPU","TINGGIMONCONG","TOMBOLO PAO","TOMPOBULU"],"KAB. JENEPONTO":["ARUNGKEKE","BANGKALA","BANGKALA BARAT","BATANG","BINAMU","BONTORAMBA","KELARA","RUMBIA","TAMALATEA","TAROWANG","TURATEA"],"KAB. KEPULAUAN SELAYAR":["BENTENG","BONTOHARU","BONTOMANAI","BONTOMATENE","BONTOSIKUYU","BUKI","PASILAMBENA","PASIMARANNU","PASIMASSUNGGU","PASIMASSUNGGU TIMUR","TAKABONERATE"],"KAB. LUWU":["BAJO","BAJO BARAT","BASSESANGTEMPE","BASSESANGTEMPE UTARA","BELOPA","BELOPA UTARA","BUA","BUPON","KAMANRE","LAMASI","LAMASI TIMUR","LAROMPONG","LAROMPONG SELATAN","LATIMOJONG","PONRANG","PONRANG SELATAN","SULI","SULI BARAT","WALENRANG","WALENRANG BARAT","WALENRANG TIMUR","WALENRANG UTARA"],"KAB. LUWU TIMUR":["ANGKONA","BURAU","KALAENA","MALILI","MANGKUTANA","NUHA","TOMONI","TOMONI TIMUR","TOWUTI","WASUPONDA","WOTU"],"KAB. LUWU UTARA":["BAEBUNTA","BAEBUNTA SELATAN","BONE-BONE","MALANGKE","MALANGKE BARAT","MAPPEDECENG","MASAMBA","RAMPI","RONGKONG","SABBANG","SABBANG SELATAN","SEKO","SUKAMAJU","SUKAMAJU SELATAN","TANA LILI"],"KAB. MAROS":["BANTIMURUNG","BONTOA","CAMBA","CENRANA","LAU","MALLAWA","MANDAI","MAROS BARU","MARUSU","MONCONGLOE","SIMBANG","TANRALILI","TOMPU BULU","TURIKALE"],"KAB. PANGKAJENE DAN KEPULAUAN":["BALOCCI","BUNGORO","LABAKKANG","LIUKANG KALMAS","LIUKANG TANGAYA","LIUKANG TUPABBIRING","LIUKANG TUPABBIRING UTARA","MA'RANG","MANDALLE","MINASATENE","PANGKAJENE","SEGERI","TONDONG TALLASA"],"KAB. PINRANG":["BATULAPPA","CEMPA","DUAMPANUA","LANRISANG","LEMBANG","MATTIRO BULU","MATTIROSOMPE","PALETEANG","PATAMPANUA","SUPPA","TIROANG","WATANG SAWITTO"],"KAB. SIDENRENG RAPPANG":["BARANTI","DUAPITUE","KULO","MARITENGNGAE","PANCA LAUTANG","PANCA RIJANG","PITU RIASE","PITU RIAWA","TELLULIMPO E","WATANG PULU","WATANG SIDENRENG"],"KAB. SINJAI":["BULUPODDO","PULAU SEMBILAN","SINJAI BARAT","SINJAI BORONG","SINJAI SELATAN","SINJAI TENGAH","SINJAI TIMUR","SINJAI UTARA","TELLU LIMPOE"],"KAB. SOPPENG":["CITTA","DONRI DONRI","GANRA","LALABATA","LILI RIAJA","LILI RILAU","MARIO RIAWA","MARIO RIWAWO"],"KAB. TAKALAR":["GALESONG","GALESONG SELATAN","GALESONG UTARA","KEPULAUAN TANAKEKE","LAIKANG","MANGARABOMBANG","MAPPAKASUNGGU","PATTALLASSANG","POLOMBANGKENG SELATAN","POLOMBANGKENG UTARA","POLONGBANGKENG TIMUR","SANROBONE"],"KAB. TANA TORAJA":["BITTUANG","BONGGAKARADENG","GANDANGBATU SILANAN","KURRA","MAKALE","MAKALE SELATAN","MAKALE UTARA","MALIMBONG BALEPE","MAPPAK","MASANDA","MENGKENDEK","RANO","RANTETAYO","REMBON","SALUPUTTI","SANGALA SELATAN","SANGALLA","SANGALLA UTARA","SIMBUANG"],"KAB. TORAJA UTARA":["AWAN RANTE KARUA","BALUSU","BANGKELEKILA","BARUPPU","BUNTAO","BUNTU PEPASAN","DENDE PIONGAN NAPO","KAPALA PITU","KESU","NANGGALA","RANTEBUA","RANTEPAO","RINDINGALLO","SA'DAN","SANGGALANGI","SESEAN","SESEAN SULOARA","SOPAI","TALLUNGLIPU","TIKALA","TONDON"],"KAB. WAJO":["BELAWA","BOLA","GILIRENG","KEERA","MAJAULENG","MANIANG PAJO","PAMMANA","PENRANG","PITUMPANUA","SABBANG PARU","SAJOANGING","TAKKALALLA","TANASITOLO","TEMPE"],"KOTA MAKASSAR":["BIRING KANAYA","BONTOALA","KEPULAUAN SANGKARRANG","MAKASSAR","MAMAJANG","MANGGALA","MARISO","PANAKKUKANG","RAPPOCINI","TALLO","TAMALANREA","TAMALATE","UJUNG PANDANG","UJUNG TANAH","WAJO"],"KOTA PALOPO":["BARA","MUNGKAJANG","SENDANA","TELLUWANUA","WARA","WARA BARAT","WARA SELATAN","WARA TIMUR","WARA UTARA"],"KOTA PAREPARE":["BACUKIKI","BACUKIKI BARAT","SOREANG","UJUNG"]},"SULAWESI TENGAH":{"KAB. BANGGAI":["BALANTAK","BALANTAK SELATAN","BALANTAK UTARA","BATUI","BATUI SELATAN","BUALEMO","BUNTA","KINTOM","LAMALA","LOBU","LUWUK","LUWUK SELATAN","LUWUK TIMUR","LUWUK UTARA","MANTOH","MASAMA","MOILONG","NAMBO","NUHON","PAGIMANA","SIMPANG RAYA","TOILI","TOILI BARAT","TOILI JAYA"],"KAB. BANGGAI KEPULAUAN":["BUKO","BUKO SELATAN","BULAGI","BULAGI SELATAN","BULAGI UTARA","LIANG","PELING TENGAH","TINANGKUNG","TINANGKUNG SELATAN","TINANGKUNG UTARA","TOTIKUM","TOTIKUM SELATAN"],"KAB. BANGGAI LAUT":["BANGGAI","BANGGAI SELATAN","BANGGAI TENGAH","BANGGAI UTARA","BANGKURUNG","BOKAN KEPULAUAN","LABOBO"],"KAB. BUOL":["BIAU","BOKAT","BUKAL","BUNOBOGU","GADUNG","KARAMAT","LAKEA","MOMUNU","PALELEH","PALELEH BARAT","TILOAN"],"KAB. DONGGALA":["BALAESANG","BALAESANG TANJUNG","BANAWA","BANAWA SELATAN","BANAWA TENGAH","DAMPELAS","LABUAN","PINEMBANI","RIO PAKAVA","SINDUE","SINDUE TOBATA","SINDUE TOMBUSABORA","SIRENJA","SOJOL","SOJOL UTARA","TANANTOVEA"],"KAB. MOROWALI":["BAHODOPI","BUMI RAYA","BUNGKU BARAT","BUNGKU PESISIR","BUNGKU SELATAN","BUNGKU TENGAH","BUNGKU TIMUR","MENUI KEPULAUAN","SOMBORI KEPULAUAN","WITA PONDA"],"KAB. MOROWALI UTARA":["BUNGKU UTARA","LEMBO","LEMBO RAYA","MAMOSALATO","MORI ATAS","MORI UTARA","PETASIA","PETASIA BARAT","PETASIA TIMUR","SOYO JAYA"],"KAB. PARIGI MOUTONG":["AMPIBABO","BALINGGI","BOLANO","BOLANO LAMBUNU","KASIMBAR","MEPANGA","MOUTONG","ONGKA MALINO","PALASA","PARIGI","PARIGI BARAT","PARIGI SELATAN","PARIGI TENGAH","PARIGI UTARA","SAUSU","SIDOAN","SINIU","TAOPA","TINOMBO","TINOMBO SELATAN","TOMINI","TORIBULU","TORUE"],"KAB. POSO":["LAGE","LORE BARAT","LORE PEORE","LORE SELATAN","LORE TENGAH","LORE TIMUR","LORE UTARA","PAMONA BARAT","PAMONA PUSALEMBA","PAMONA SELATAN","PAMONA TENGGARA","PAMONA TIMUR","PAMONA UTARA","POSO KOTA","POSO KOTA SELATAN","POSO KOTA UTARA","POSO PESISIR","POSO PESISIR SELATAN","POSO PESISIR UTARA"],"KAB. SIGI":["DOLO","DOLO BARAT","DOLO SELATAN","GUMBASA","KINOVARO","KULAWI","KULAWI SELATAN","LINDU","MARAWOLA","MARAWOLA BARAT","NOKILALAKI","PALOLO","PIPIKORO","SIGI BIROMARU","SIGI KOTA","TANAMBULAVA"],"KAB. TOJO UNA UNA":["AMPANA KOTA","AMPANA TETE","BATUDAKA","RATOLINDO","TALATAKO","TOGEAN","TOJO","TOJO BARAT","ULUBONGKA","UNA - UNA","WALEA BESAR","WALEA KEPULAUAN"],"KAB. TOLI TOLI":["BAOLAN","BASIDONDO","DAKO PEMEAN","DAMPAL SELATAN","DAMPAL UTARA","DONDO","GALANG","LAMPASIO","OGODEIDE","TOLITOLI UTARA"],"KOTA PALU":["MANTIKULORE","PALU BARAT","PALU SELATAN","PALU TIMUR","PALU UTARA","TATANGA","TAWAELI","ULUJADI"]},"SULAWESI TENGGARA":{"KAB. BOMBANA":["KABAENA","KABAENA BARAT","KABAENA SELATAN","KABAENA TENGAH","KABAENA TIMUR","KABAENA UTARA","KEP. MASALOKA RAYA","LANTARI JAYA","MATA OLEO","MATA USU","POLEANG","POLEANG BARAT","POLEANG SELATAN","POLEANG TENGAH","POLEANG TENGGARA","POLEANG TIMUR","POLEANG UTARA","RAROWATU","RAROWATU UTARA","RUMBIA","RUMBIA TENGAH","TONTONUNU"],"KAB. BUTON":["KAPONTORI","LASALIMU","LASALIMU SELATAN","PASAR WAJO","SIOTAPINA","WABULA","WOLOWA"],"KAB. BUTON SELATAN":["BATAUGA","BATU ATAS","KADATUA","LAPANDEWA","SAMPOLAWA","SIOMPU","SIOMPU BARAT"],"KAB. BUTON TENGAH":["GU","LAKUDO","MAWASANGKA","MAWASANGKA TENGAH","MAWASANGKA TIMUR","SANGIA WAMBULU","TALAGA RAYA"],"KAB. BUTON UTARA":["BONEGUNU","KAMBOWA","KULISUSU","KULISUSU BARAT","KULISUSU UTARA","WAKORUMBA UTARA"],"KAB. KOLAKA":["BAULA","IWOIMENDAA","KOLAKA","LATAMBAGA","POLINGGONA","POMALAA","SAMATURU","TANGGETADA","TOARI","WATUBANGGA","WOLO","WUNDULAKO"],"KAB. KOLAKA TIMUR":["AERE","DANGIA","LADONGI","LALOLAE","LAMBANDIA","LOEA","MOWEWE","POLI-POLIA","TINONDO","TIRAWUTA","UEESI","ULUIWOI"],"KAB. KOLAKA UTARA":["BATU PUTIH","KATOI","KODEOHA","LAMBAI","LASUSUA","NGAPA","PAKUE","PAKUE TENGAH","PAKUE UTARA","POREHU","RANTEANGIN","TIWU","TOLALA","WATUNOHU","WAWO"],"KAB. KONAWE":["ABUKI","AMONGGEDO","ANGGABERI","ANGGALOMOARE","ASINUA","BESULUTU","BONDOALA","KAPOIALA","KONAWE","LALONGGASUMEETO","LAMBUYA","LATOMA","MELUHU","MOROSI","ONEMBUTE","PADANGGUNI","PONDIDAHA","PURIALA","ROUTA","SAMPARA","SOROPIA","TONGAUNA","TONGAUNA UTARA","UEPAI","UNAAHA","WAWOTOBI","WONGGEDUKU","WONGGEDUKU BARAT"],"KAB. KONAWE KEPULAUAN":["WAWONII BARAT","WAWONII SELATAN","WAWONII TENGAH","WAWONII TENGGARA","WAWONII TIMUR","WAWONII TIMUR LAUT","WAWONII UTARA"],"KAB. KONAWE SELATAN":["ANDOOLO","ANDOOLO BARAT","ANGATA","BAITO","BASALA","BENUA","BUKE","KOLONO","KOLONO TIMUR","KONDA","LAEYA","LAINEA","LALEMBUU","LANDONO","LAONTI","MORAMO","MORAMO UTARA","MOWILA","PALANGGA","PALANGGA SELATAN","RANOMEETO","RANOMEETO BARAT","SABULAKOA","TINANGGEA","WOLASI"],"KAB. KONAWE UTARA":["ANDOWIA","ASERA","LANDAWE","LANGGIKIMA","LASOLO","LASOLO KEPULAUAN","LEMBO","MOLAWE","MOTUI","OHEO","SAWA","WAWOLESEA","WIWIRANO"],"KAB. MUNA":["BATALAIWORU","BATUKARA","BONE","DURUKA","KABANGKA","KABAWO","KATOBU","KONTUKOWUNA","KONTUNAGA","LASALEPA","LOHIA","MALIGANO","MAROBO","NAPABALANO","PARIGI","PASI KOLAGA","PASIR PUTIH","TONGKUNO","TONGKUNO SELATAN","TOWEA","WAKORUMBA SELATAN","WATOPUTE"],"KAB. MUNA BARAT":["BARANGKA","KUSAMBI","LAWA","MAGINTI","NAPANO KUSAMBI","SAWERIGADI","TIWORO KEPULAUAN","TIWORO SELATAN","TIWORO TENGAH","TIWORO UTARA","WA DAGA"],"KAB. WAKATOBI":["BINONGKO","KALEDUPA","KALEDUPA SELATAN","TOGO BINONGKO","TOMIA","TOMIA TIMUR","WANGI-WANGI","WANGI-WANGI SELATAN"],"KOTA BAU BAU":["BATUPOARO","BETOAMBARI","BUNGI","KOKALUKUNA","LEA-LEA","MURHUM","SORAWOLIO","WOLIO"],"KOTA KENDARI":["ABELI","BARUGA","KADIA","KAMBU","KENDARI","KENDARI BARAT","MANDONGA","NAMBO","POASIA","PUUWATU","WUA-WUA"]},"SULAWESI UTARA":{"KAB. BOLAANG MONGONDOW":["BILALANG","BOLAANG","BOLAANG TIMUR","DUMOGA","DUMOGA BARAT","DUMOGA TENGAH","DUMOGA TENGGARA","DUMOGA TIMUR","DUMOGA UTARA","LOLAK","LOLAYAN","PASSI BARAT","PASSI TIMUR","POIGAR","SANGTOMBOLANG"],"KAB. BOLAANG MONGONDOW SELATAN":["BOLAANG UKI","HELUMO","PINOLOSIAN","PINOLOSIAN TENGAH","PINOLOSIAN TIMUR","POSIGADAN","TOMINI"],"KAB. BOLAANG MONGONDOW TIMUR":["KOTABUNAN","MODAYAG","MODAYAG BARAT","MOOAT","MOTONGKAD","NUANGAN","TUTUYAN"],"KAB. BOLAANG MONGONDOW UTARA":["BINTAUNA","BOLANG ITANG BARAT","BOLANG ITANG TIMUR","KAIDIPANG","PINOGALUMAN","SANGKUB"],"KAB. KEP. SIAU TAGULANDANG BIARO":["BIARO","SIAU BARAT","SIAU BARAT SELATAN","SIAU BARAT UTARA","SIAU TENGAH","SIAU TIMUR","SIAU TIMUR SELATAN","TAGULANDANG","TAGULANDANG SELATAN","TAGULANDANG UTARA"],"KAB. KEPULAUAN SANGIHE":["KENDAHE","KEPULAUAN MARORE","MANGANITU","MANGANITU SELATAN","NUSA TABUKAN","TABUKAN SELATAN","TABUKAN SELATAN TENGAH","TABUKAN SELATAN TENGGARA","TABUKAN TENGAH","TABUKAN UTARA","TAHUNA","TAHUNA BARAT","TAHUNA TIMUR","TAMAKO","TATOARENG"],"KAB. KEPULAUAN TALAUD":["BEO","BEO SELATAN","BEO UTARA","DAMAU","ESSANG","ESSANG SELATAN","GEMEH","KABARUAN","KALONGAN","LIRUNG","MELONGUANE","MELONGUANE TIMUR","MIANGAS","MORONGE","NANUSA","PULUTAN","RAINIS","SALIBABU","TAMPAN'AMMA"],"KAB. MINAHASA":["ERIS","KAKAS","KAKAS BARAT","KAWANGKOAN","KAWANGKOAN BARAT","KAWANGKOAN UTARA","KOMBI","LANGOWAN BARAT","LANGOWAN SELATAN","LANGOWAN TIMUR","LANGOWAN UTARA","LEMBEAN TIMUR","MANDOLANG","PINELENG","REMBOKEN","SONDER","TOMBARIRI","TOMBARIRI TIMUR","TOMBULU","TOMPASO","TOMPASO BARAT","TONDANO BARAT","TONDANO SELATAN","TONDANO TIMUR","TONDANO UTARA"],"KAB. MINAHASA SELATAN":["AMURANG","AMURANG BARAT","AMURANG TIMUR","KUMELEMBUAI","MAESAAN","MODOINDING","MOTOLING","MOTOLING BARAT","MOTOLING TIMUR","RANOYAPO","SINONSAYANG","SULUUN TARERAN","TARERAN","TATAPAAN","TENGA","TOMPASO BARU","TUMPAAN"],"KAB. MINAHASA TENGGARA":["BELANG","PASAN","PUSOMAEN","RATAHAN","RATAHAN TIMUR","RATATOTOK","SILIAN RAYA","TOMBATU","TOMBATU TIMUR","TOMBATU UTARA","TOULUAAN","TOULUAAN SELATAN"],"KAB. MINAHASA UTARA":["AIRMADIDI","DIMEMBE","KALAWAT","KAUDITAN","KEMA","LIKUPANG BARAT","LIKUPANG SELATAN","LIKUPANG TIMUR","TALAWAAN","WORI"],"KOTA BITUNG":["AERTEMBAGA","GIRIAN","LEMBEH SELATAN","LEMBEH UTARA","MADIDIR","MAESA","MATUARI","RANOWULU"],"KOTA KOTAMOBAGU":["KOTAMOBAGU BARAT","KOTAMOBAGU SELATAN","KOTAMOBAGU TIMUR","KOTAMOBAGU UTARA"],"KOTA MANADO":["BUNAKEN","BUNAKEN KEPULAUAN","MALALAYANG","MAPANGET","PAAL DUA","SARIO","SINGKIL","TIKALA","TUMINTING","WANEA","WENANG"],"KOTA TOMOHON":["TOMOHON BARAT","TOMOHON SELATAN","TOMOHON TENGAH","TOMOHON TIMUR","TOMOHON UTARA"]},"SUMATERA BARAT":{"KAB. AGAM":["AMPEK ANGKEK","AMPEK NAGARI","BANUHAMPU","BASO","CANDUANG","IV KOTO","KAMANG MAGEK","LUBUK BASUNG","MALALAK","MATUR","PALEMBAYAN","PALUPUH","SUNGAI PUA","TANJUNG MUTIARA","TANJUNG RAYA","TILATANG KAMANG"],"KAB. DHARMASRAYA":["ASAM JUJUHAN","IX KOTO","KOTO BARU","KOTO BESAR","KOTO SALAK","PADANG LAWEH","PULAU PUNJUNG","SITIUNG","SUNGAI RUMBAI","TIMPEH","TIUMANG"],"KAB. KEPULAUAN MENTAWAI":["PAGAI SELATAN","PAGAI UTARA","SEBERUT BARAT DAYA","SIBERUT BARAT","SIBERUT SELATAN","SIBERUT TENGAH","SIBERUT UTARA","SIKAKAP","SIPORA SELATAN","SIPORA UTARA"],"KAB. LIMA PULUH KOTA":["AKABILURU","BUKIK BARISAN","GUGUAK","GUNUANG OMEH","HARAU","KAPUR IX","LAREH SAGO HALABAN","LUAK","MUNGKA","PANGKALAN KOTO BARU","PAYAKUMBUH","SITUJUAH LIMO NAGARI","SULIKI"],"KAB. PADANG PARIAMAN":["2 X 11 ANAM LINGKUANG","2 X 11 KAYU TANAM","ANAM LINGKUANG","BATANG ANAI","BATANG GASAN","IV KOTO AUA MALINTANG","LUBUAK ALUANG","NAN SABARIS","SINTUAK TOBOH GADANG","SUNGAI GARINGGIANG","SUNGAI LIMAU","ULAKAN TAPAKIH","V KOTO","V KOTO TIMUR","VII KOTO","VII KOTO PADANG SAGO","VII KOTO PATAMUAN"],"KAB. PASAMAN":["BONJOL","DUA KOTO","LUBUK SIKAPING","MAPAT TUNGGUL","MAPAT TUNGGUL SELATAN","PADANG GELUGUR","PANTI","RAO","RAO SELATAN","RAO UTARA","SIMPANG ALAHAN MATI","TIGO NAGARI"],"KAB. PASAMAN BARAT":["GUNUNG TULEH","KINALI","KOTO BALINGKA","LEMBAH MELINTANG","LUHAK NAN DUO","PASAMAN","RANAH BATAHAN","SASAK RANAH PASISIE","SUNGAI AUR","SUNGAI BEREMAS","TALAMAU"],"KAB. PESISIR SELATAN":["AIRPURA","BASA AMPEK BALAI TAPAN","BATANG KAPAS","BAYANG","IV  NAGARI BAYANG UTARA","IV JURAI","KOTO XI TARUSAN","LENGAYANG","LINGGO SARI BAGANTI","LUNANG","PANCUNG SOAL","RANAH AMPEK HULU TAPAN","RANAH PESISIR","SILAUT","SUTERA"],"KAB. SIJUNJUNG":["IV NAGARI","KAMANG BARU","KOTO TUJUH","KUPITAN","LUBUK TAROK","SIJUNJUNG","SUMPUR KUDUS","TANJUNG GADANG"],"KAB. SOLOK":["BUKIT SUNDI","DANAU KEMBAR","GUNUNG TALANG","HILIRAN GUMANTI","IX KOTO SUNGAI LASI","JUNJUNG SIRIH","KUBUNG","LEMBAH GUMANTI","LEMBANG JAYA","PANTAI CERMIN","PAYUNG SEKAKI","TIGO LURAH","X KOTO DIATAS","X KOTO SINGKARAK"],"KAB. SOLOK SELATAN":["KOTO PARIK GADANG DIATEH","PAUH DUO","SANGIR","SANGIR BALAI JANGGO","SANGIR BATANG HARI","SANGIR JUJUAN","SUNGAI PAGU"],"KAB. TANAH DATAR":["BATIPUAH SELATAN","BATIPUH","LIMA KAUM","LINTAU BUO","LINTAU BUO UTARA","PADANG GANTING","PARIANGAN","RAMBATAN","SALIMPAUNG","SUNGAI TARAB","SUNGAYANG","TANJUANG BARU","TANJUNG EMAS","X KOTO"],"KOTA BUKITTINGGI":["AUR BIRUGO TIGO BALEH","GUGUK PANJANG","MANDIANGIN KOTO SELAYAN"],"KOTA PADANG":["BUNGUS TELUK KABUNG","KOTO TANGAH","KURANJI","LUBUK BEGALUNG","LUBUK KILANGAN","NANGGALO","PADANG BARAT","PADANG SELATAN","PADANG TIMUR","PADANG UTARA","PAUH"],"KOTA PADANG PANJANG":["PADANG PANJANG BARAT","PADANG PANJANG TIMUR"],"KOTA PARIAMAN":["PARIAMAN SELATAN","PARIAMAN TENGAH","PARIAMAN TIMUR","PARIAMAN UTARA"],"KOTA PAYAKUMBUH":["LAMPOSI TIGO NAGORI","PAYAKUMBUH BARAT","PAYAKUMBUH SELATAN","PAYAKUMBUH TIMUR","PAYAKUMBUH UTARA"],"KOTA SAWAHLUNTO":["BARANGIN","LEMBAH SEGAR","SILUNGKANG","TALAWI"],"KOTA SOLOK":["LUBUK SIKARAH","TANJUNG HARAPAN"]},"SUMATERA SELATAN":{"KAB. BANYUASIN":["AIR KUMBANG","AIR SALEK","BANYUASIN I","BANYUASIN II","BANYUASIN III","BETUNG","KARANG AGUNG ILIR","MAKARTI JAYA","MUARA PADANG","MUARA SUGIHAN","MUARA TELANG","PULAU RIMAU","RAMBUTAN","RANTAU BAYUR","SELAT PENUGUAN","SEMBAWA","SUAK TAPEH","SUMBER MARGA TELANG","TALANG KELAPA","TANJUNG LAGO","TUNGKAL ILIR"],"KAB. EMPAT LAWANG":["LINTANG KANAN","MUARA PINANG","PASEMAH AIR KERUH","PENDOPO","PENDOPO BARAT","SALING","SIKAP DALAM","TALANG PADANG","TEBING TINGGI","ULU MUSI"],"KAB. LAHAT":["GUMAY TALANG","GUMAY ULU","JARAI","KIKIM BARAT","KIKIM SELATAN","KIKIM TENGAH","KIKIM TIMUR","KOTA AGUNG","LAHAT","LAHAT SELATAN","MERAPI BARAT","MERAPI SELATAN","MERAPI TIMUR","MUARA PAYANG","MULAK SEBINGKAI","MULAK ULU","PAGAR GUNUNG","PAJAR BULAN","PSEKSU","PULAU PINANG","SUKAMERINDU","TANJUNG SAKTI PUMI","TANJUNG SAKTI PUMU","TANJUNG TEBAT"],"KAB. MUARA ENIM":["BELIDA DARAT","BELIMBING","BENAKAT","EMPAT PETULAI DANGKU","GELUMBANG","GUNUNG MEGANG","KELEKAR","LAWANG KIDUL","LEMBAK","LUBAI","LUBAI ULU","MUARA BELIDA","MUARA ENIM","PANANG ENIM","RAMBANG","RAMBANG NIRU","SEMENDO DARAT LAUT","SEMENDO DARAT TENGAH","SEMENDO DARAT ULU","SUNGAI ROTAN","TANJUNG AGUNG","UJAN MAS"],"KAB. MUSI BANYUASIN":["BABAT SUPAT","BABAT TOMAN","BATANGHARI LEKO","BAYUNG LENCIR","JIRAK JAYA","KELUANG","LAIS","LALAN","LAWANG WETAN","PLAKAT TINGGI","SANGA DESA","SEKAYU","SUNGAI KERUH","SUNGAI LILIN","TUNGKAL JAYA"],"KAB. MUSI RAWAS":["BULANG TENGAH SUKU ULU","JAYALOKA","MEGANG SAKTI","MUARA BELITI","MUARA KELINGI","MUARA LAKITAN","PURWODADI","SELANGIT","SUKA KARYA","SUKU TENGAH LAKITAN ULU","SUMBER HARTA","TIANG PUMPUNG KEPUNGUT","TUAH NEGERI","TUGUMULYO"],"KAB. MUSI RAWAS UTARA":["KARANG DAPO","KARANG JAYA","NIBUNG","RAWAS ILIR","RAWAS ULU","RUPIT","ULU RAWAS"],"KAB. OGAN ILIR":["INDRALAYA","INDRALAYA SELATAN","INDRALAYA UTARA","KANDIS","LUBUK KELIAT","MUARA KUANG","PAYARAMAN","PEMULUTAN","PEMULUTAN BARAT","PEMULUTAN SELATAN","RAMBANG KUANG","RANTAU ALAI","RANTAU PANJANG","SUNGAI PINANG","TANJUNG BATU","TANJUNG RAJA"],"KAB. OGAN KOMERING ILIR":["AIR SUGIHAN","CENGAL","JEJAWI","KOTA KAYU AGUNG","LEMPUING","LEMPUING JAYA","MESUJI","MESUJI MAKMUR","MESUJI RAYA","PAMPANGAN","PANGKALAN LAMPAM","PEDAMARAN","PEDAMARAN TIMUR","SIRAH PULAU PADANG","SUNGAI MENANG","TANJUNG LUBUK","TELUK GELAM","TULUNG SELAPAN"],"KAB. OGAN KOMERING ULU":["BATU RAJA BARAT","BATU RAJA TIMUR","KEDATON PENINJAUAN RAYA","LENGKITI","LUBUK BATANG","LUBUK RAJA","MUARA JAYA","PENGANDONAN","PENINJAUAN","SEMIDANG AJI","SINAR PENINJAUAN","SOSOH BUAY RAYAP","ULU OGAN"],"KAB. OGAN KOMERING ULU SELATAN":["BANDING AGUNG","BUANA PEMACA","BUAY PEMACA","BUAY PEMATANG RIBU RANAU TENGAH","BUAY RAWAN","BUAY RUNJUNG","BUAY SANDANG AJI","KISAM ILIR","KISAM TINGGI","MEKAKAU ILIR","MUARADUA","MUARADUA KISAM","PULAU BERINGIN","RUNJUNG AGUNG","SIMPANG","SINDANG DANAU","SUNGAI ARE","TIGA DIHAJI","WARKUK RANAU SELATAN"],"KAB. OGAN KOMERING ULU TIMUR":["BELITANG","BELITANG II","BELITANG III","BELITANG JAYA","BELITANG MADANG RAYA","BELITANG MULYA","BUAY MADANG","BUAY MADANG TIMUR","BUAY PEMUKA BANGSA RAJA","BUAY PEMUKA PELIUNG","BUNGA MAYANG","CEMPAKA","JAYA PURA","MADANG SUKU I","MADANG SUKU II","MADANG SUKU III","MARTAPURA","SEMENDAWAI BARAT","SEMENDAWAI SUKU III","SEMENDAWAI TIMUR"],"KAB. PENUKAL ABAB LEMATANG ILIR":["ABAB","PENUKAL","PENUKAL UTARA","TALANG UBI","TANAH ABANG"],"KOTA LUBUK LINGGAU":["LUBUK LINGGAU BARAT I","LUBUK LINGGAU BARAT II","LUBUK LINGGAU SELATAN I","LUBUK LINGGAU SELATAN II","LUBUK LINGGAU TIMUR I","LUBUK LINGGAU TIMUR II","LUBUK LINGGAU UTARA I","LUBUK LINGGAU UTARA II"],"KOTA PAGAR ALAM":["DEMPO SELATAN","DEMPO TENGAH","DEMPO UTARA","PAGAR ALAM SELATAN","PAGAR ALAM UTARA"],"KOTA PALEMBANG":["ALANG-ALANG LEBAR","BUKITKECIL","GANDUS","ILIR BARAT DUA","ILIR BARAT SATU","ILIR TIMUR DUA","ILIR TIMUR SATU","ILIR TIMUR TIGA","JAKABARING","KALIDONI","KEMUNING","KERTAPATI","PLAJU","SAKO","SEBERANG ULU DUA","SEBERANG ULU SATU","SEMATANGBORANG","SUKARAMI"],"KOTA PRABUMULIH":["CAMBAI","PRABUMULIH BARAT","PRABUMULIH SELATAN","PRABUMULIH TIMUR","PRABUMULIH UTARA","RAMBANG KAPAK TENGAH"]},"SUMATERA UTARA":{"KAB. ASAHAN":["AEK KUASAN","AEK LEDONG","AEK SONGSONGAN","AIR BATU","AIR JOMAN","BANDAR PASIR MANDOGE","BANDAR PULAU","BUNTU PANE","KOTA KISARAN BARAT","KOTA KISARAN TIMUR","MERANTI","PULAU RAKYAT","PULO BANDRING","RAHUNING","RAWANG PANCA ARGA","SEI DADAP","SEI KEPAYANG","SEI KEPAYANG BARAT","SEI KEPAYANG TIMUR","SETIA JANJI","SILAU LAUT","SIMPANG EMPAT","TANJUNG BALAI","TELUK DALAM","TINGGI RAJA"],"KAB. BATU BARA":["AIR PUTIH","DATUK LIMA PULUH","DATUK TANAH DATAR","LAUT TADOR","LIMA PULUH","LIMA PULUH PESISIR","MEDANG DERAS","NIBUNG HANGUS","SEI BALAI","SEI SUKA","TALAWI","TANJUNG TIRAM"],"KAB. DAIRI":["BERAMPU","GUNUNG SITEMBER","LAE PARIRA","PARBULUAN","PEGAGAN HILIR","SIDIKALANG","SIEMPAT NEMPU","SIEMPAT NEMPU HILIR","SIEMPAT NEMPU HULU","SILAHISABUNGAN","SILIMA PUNGGA-PUNGGA","SITINJO","SUMBUL","TANAH PINEM","TIGALINGGA"],"KAB. DELI SERDANG":["BANGUN PURBA","BATANG KUIS","BERINGIN","BIRU-BIRU","DELI TUA","GALANG","GUNUNG MERIAH","HAMPARAN PERAK","KUTALIMBARU","LABUHAN DELI","LUBUK PAKAM","NAMO RAMBE","PAGAR MERBAU","PANCUR BATU","PANTAI LABU","PATUMBAK","PERCUT SEI TUAN","SIBOLANGIT","SINEMBAH TANJUNG MUDA HILIR","SINEMBAH TANJUNG MUDA HULU","SUNGGAL","TANJUNG MORAWA"],"KAB. HUMBANG HASUNDUTAN":["BAKTI RAJA","DOLOK SANGGUL","LINTONG NIHUTA","ONAN GANJANG","PAKKAT","PARANGINAN","PARLILITAN","POLLUNG","SIJAMA POLANG","TARA BINTANG"],"KAB. KARO":["BARUSJAHE","BERASTAGI","DOLAT RAYAT","JUHAR","KABANJAHE","KUTABULUH","LAUBALENG","MARDINGDING","MERDEKA","MEREK","MUNTE","NAMAN TERAN","PAYUNG","SIMPANG EMPAT","TIGABINANGA","TIGANDERKET","TIGAPANAH"],"KAB. LABUHANBATU":["BILAH BARAT","BILAH HILIR","BILAH HULU","PANAI HILIR","PANAI HULU","PANAI TENGAH","PANGKATAN","RANTAU SELATAN","RANTAU UTARA"],"KAB. LABUHANBATU SELATAN":["KAMPUNG RAKYAT","KOTAPINANG","SILANGKITANG","SUNGAI KANAN","TORGAMBA"],"KAB. LABUHANBATU UTARA":["AEK KUO","AEK NATAS","KUALUH HILIR","KUALUH HULU","KUALUH LEIDONG","KUALUH SELATAN","MARBAU","NA IX-X"],"KAB. LANGKAT":["BABALAN","BAHOROK","BATANG SERANGAN","BESITANG","BINJAI","BRANDAN BARAT","GEBANG","HINAI","KUALA","KUTAMBARU","PADANG TUALANG","PANGKALAN SUSU","PEMATANG JAYA","SALAPIAN","SAWIT SEBERANG","SECANGGANG","SEI BINGAI","SEI LEPAN","SELESAI","SIRAPIT","STABAT","TANJUNG PURA","WAMPU"],"KAB. MANDAILING NATAL":["BATAHAN","BATANG NATAL","BUKIT MALINTANG","HUTA BARGOT","KOTANOPAN","LEMBAH SORIK MARAPI","LINGGA BAYU","MUARA BATANG GADIS","MUARA SIPONGI","NAGA JUANG","NATAL","PAKANTAN","PANYABUNGAN","PANYABUNGAN BARAT","PANYABUNGAN SELATAN","PANYABUNGAN TIMUR","PANYABUNGAN UTARA","PUNCAK SORIK MARAPI","RANTO BAEK","SIABU","SINUNUKAN","TAMBANGAN","ULU PUNGKUT"],"KAB. NIAS":["BAWOLATO","BOTOMUZOI","GIDO","HILIDUHO","HILISERANGKAI","IDANOGAWO","MA'U","SOGAE'ADU","SOMOLO-MOLO","ULUGAWO"],"KAB. NIAS BARAT":["LAHOMI","LOLOFITU MOI","MANDREHE","MANDREHE BARAT","MANDREHE UTARA","MORO'O","SIROMBU","ULU MORO'O"],"KAB. NIAS SELATAN":["AMANDRAYA","ARAMO","BORONADU","FANAYAMA","GOMO","HIBALA","HILIMEGAI","HILISALAWA'AHE","HURUNA","IDANOTAE","LAHUSA","LOLOMATUA","LOLOWAU","LUAHAGUNDRE MANIAMOLO","MANIAMOLO","MAZINO","MAZO","O'O'U","ONOHAZUMBA","ONOLALU","PULAU-PULAU BATU","PULAU-PULAU BATU BARAT","PULAU-PULAU BATU TIMUR","PULAU-PULAU BATU UTARA","SIDUA'ORI","SIMUK","SOMAMBAWA","SUSUA","TANAH MASA","TELUK DALAM","TOMA","ULU IDANOTAE","ULUNOYO","ULUSUSUA","UMBUNASI"],"KAB. NIAS UTARA":["AFULU","ALASA","ALASA TALU MUZOI","LAHEWA","LAHEWA TIMUR","LOTU","NAMOHALU ESIWA","SAWO","SITOLU ORI","TUGALA OYO","TUHEMBERUA"],"KAB. PADANG LAWAS":["AEK NABARA BARUMUN","BARUMUN","BARUMUN BARAT","BARUMUN BARU","BARUMUN SELATAN","BARUMUN TENGAH","BATANG LUBU SUTAM","HURISTAK","HUTARAJA TINGGI","LUBUK BARUMUN","SIHAPAS BARUMUN","SOSA","SOSA JULU","SOSA TIMUR","SOSOPAN","ULU BARUMUN","ULU SOSA"],"KAB. PADANG LAWAS UTARA":["BATANG ONANG","DOLOK","DOLOK SIGOMPULON","HALONGONAN","HALONGONAN TIMUR","HULU SIHAPAS","PADANG BOLAK","PADANG BOLAK JULU","PADANG BOLAK TENGGARA","PORTIBI","SIMANGAMBAT","UJUNG BATU"],"KAB. PAKPAK BHARAT":["KERAJAAN","PAGINDAR","PERGETTENG GETTENG SENGKUT","SALAK","SIEMPAT RUBE","SITELU TALI URANG JEHE","SITELU TALI URANG JULU","TINADA"],"KAB. SAMOSIR":["HARIAN","NAINGGOLAN","ONAN RUNGGU","PALIPI","PANGURURAN","RONGGUR NIHUTA","SIANJUR MULAMULA","SIMANINDO","SITIOTIO"],"KAB. SERDANG BEDAGAI":["BANDAR KHALIPAH","BINTANG BAYU","DOLOK MASIHUL","DOLOK MERAWAN","KOTARIH","PANTAI CERMIN","PEGAJAHAN","PERBAUNGAN","SEI BAMBAN","SEI RAMPAH","SERBAJADI","SILINDA","SIPISPIS","TANJUNG BERINGIN","TEBING SYAHBANDAR","TEBINGTINGGI","TELUK MENGKUDU"],"KAB. SIMALUNGUN":["BANDAR","BANDAR HULUAN","BANDAR MASILAM","BOSAR MALIGAS","DOLOG MASAGAL","DOLOK BATU NANGGAR","DOLOK PANRIBUAN","DOLOK PARDAMEAN","DOLOK SILOU","GIRSANG SIPANGAN BOLON","GUNUNG MALELA","GUNUNG MALIGAS","HARANGGAOL HORISAN","HATONDUHAN","HUTA BAYU RAJA","JAWA MARAJA BAH JAMBI","JORLANG HATARAN","PAMATANG SIDAMANIK","PAMATANG SILIMAHUTA","PANEI","PANOMBEIAN PANEI","PEMATANG BANDAR","PURBA","RAYA","RAYA KAHEAN","SIANTAR","SIDAMANIK","SILIMAKUTA","SILOU KAHEAN","TANAH JAWA","TAPIAN DOLOK","UJUNG PADANG"],"KAB. TAPANULI SELATAN":["AEK BILAH","ANGKOLA  BARAT","ANGKOLA MUARA TAIS","ANGKOLA SANGKUNUR","ANGKOLA SELATAN","ANGKOLA TIMUR","ARSE","BATANG ANGKOLA","BATANG TORU","MARANCAR","MUARA BATANG TORU","SAIPAR DOLOK HOLE","SAYUR MATINGGI","SIPIROK","TANO TOMBANGAN ANGKOLA"],"KAB. TAPANULI TENGAH":["ANDAM DEWI","BADIRI","BARUS","BARUS UTARA","KOLANG","LUMUT","MANDUAMAS","PANDAN","PASARIBU TOBING","PINANGSORI","SARUDIK","SIBABANGUN","SIRANDORUNG","SITAHUIS","SORKAM","SORKAM BARAT","SOSORGADONG","SUKA BANGUN","TAPIAN NAULI","TUKKA"],"KAB. TAPANULI UTARA":["ADIANKOTING","GAROGA","MUARA","PAGARAN","PAHAE JAE","PAHAE JULU","PANGARIBUAN","PARMONANGAN","PURBATUA","SIATAS BARITA","SIBORONGBORONG","SIMANGUMBAN","SIPAHUTAR","SIPOHOLON","TARUTUNG"],"KAB. TOBA":["AJIBATA","BALIGE","BONATUA LUNASI","BORBOR","HABINSARAN","LAGUBOTI","LUMBAN JULU","NASSAU","PARMAKSIAN","PINTU POHAN MERANTI","PORSEA","SIANTAR NARUMONDA","SIGUMPAR","SILAEN","TAMPAHAN","ULUAN"],"KOTA BINJAI":["BINJAI BARAT","BINJAI KOTA","BINJAI SELATAN","BINJAI TIMUR","BINJAI UTARA"],"KOTA GUNUNGSITOLI":["GUNUNG SITOLI","GUNUNGSITOLI ALO OA","GUNUNGSITOLI BARAT","GUNUNGSITOLI IDANOI","GUNUNGSITOLI SELATAN","GUNUNGSITOLI UTARA"],"KOTA MEDAN":["MEDAN AMPLAS","MEDAN AREA","MEDAN BARAT","MEDAN BARU","MEDAN BELAWAN","MEDAN DELI","MEDAN DENAI","MEDAN HELVETIA","MEDAN JOHOR","MEDAN KOTA","MEDAN LABUHAN","MEDAN MAIMUN","MEDAN MARELAN","MEDAN PERJUANGAN","MEDAN PETISAH","MEDAN POLONIA","MEDAN SELAYANG","MEDAN SUNGGAL","MEDAN TEMBUNG","MEDAN TIMUR","MEDAN TUNTUNGAN"],"KOTA PADANG SIDEMPUAN":["PADANGSIDIMPUAN ANGKOLA JULU","PADANGSIDIMPUAN BATUNADUA","PADANGSIDIMPUAN HUTAIMBARU","PADANGSIDIMPUAN SELATAN","PADANGSIDIMPUAN TENGGARA","PADANGSIDIMPUAN UTARA"],"KOTA PEMATANGSIANTAR":["SIANTAR BARAT","SIANTAR MARIHAT","SIANTAR MARIMBUN","SIANTAR MARTOBA","SIANTAR SELATAN","SIANTAR SITALASARI","SIANTAR TIMUR","SIANTAR UTARA"],"KOTA SIBOLGA":["SIBOLGA KOTA","SIBOLGA SAMBAS","SIBOLGA SELATAN","SIBOLGA UTARA"],"KOTA TANJUNG BALAI":["DATUK BANDAR","DATUK BANDAR TIMUR","SEI TUALANG RASO","TANJUNG BALAI SELATAN","TANJUNG BALAI UTARA","TELUK NIBUNG"],"KOTA TEBING TINGGI":["BAJENIS","PADANG HILIR","PADANG HULU","RAMBUTAN","TEBING TINGGI KOTA"]}};
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJZ6ZSQRTAJr3oZap4-JK7YpDcCL8LESULWuv9jMjEhKjnGkuLE5npTbcoFYlVidyw1g/exec";
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+var currentPage   = 1;
+var selectedEksp  = "";
+var parsedCSVData = null;
+
+// ═══════════════════════════════════════════════════════════
+// SETUP LOGIC
+// ═══════════════════════════════════════════════════════════
+function validateUrl(input) {
+  var ok = input.value.length > 20;
+  input.classList.toggle("valid", ok);
+  checkSetupReady();
+}
+
+function handleCSV(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      parsedCSVData = parseCSVtoHierarchy(e.target.result);
+      var pc = Object.keys(parsedCSVData).length;
+      var kc = Object.values(parsedCSVData).reduce(function(s,v){ return s+Object.keys(v).length; },0);
+      var dc = Object.values(parsedCSVData).reduce(function(s,v){ return s+Object.values(v).reduce(function(s2,a){ return s2+a.length; },0); },0);
+      document.getElementById("upload-icon").textContent = "✅";
+      document.getElementById("upload-text").innerHTML = "<strong>" + file.name + "</strong>";
+      var st = document.getElementById("upload-status");
+      st.textContent = pc + " provinsi · " + kc + " kab/kota · " + dc + " kecamatan";
+      st.className = "upload-status ok";
+      document.getElementById("upload-zone").classList.add("done");
+      checkSetupReady();
+    } catch(err) {
+      document.getElementById("upload-status").textContent = "Error: " + err.message;
+      document.getElementById("upload-status").className = "upload-status err";
+    }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function parseCSVtoHierarchy(text) {
+  var lines = text.split(/\r?\n/).filter(function(l){ return l.trim(); });
+  var start = 0;
+  if (lines[0].toLowerCase().includes("prov") || lines[0].toLowerCase().includes("city")) start = 1;
+  var h = {};
+  for (var i = start; i < lines.length; i++) {
+    var cols = parseCSVLine(lines[i]);
+    if (cols.length < 3) continue;
+    var p = cols[0].trim(), k = cols[1].trim(), d = cols[2].trim();
+    if (!p||!k||!d) continue;
+    if (!h[p]) h[p] = {};
+    if (!h[p][k]) h[p][k] = [];
+    if (h[p][k].indexOf(d) === -1) h[p][k].push(d);
+  }
+  var sorted = {};
+  Object.keys(h).sort().forEach(function(p) {
+    sorted[p] = {};
+    Object.keys(h[p]).sort().forEach(function(k) { sorted[p][k] = h[p][k].sort(); });
+  });
+  return sorted;
+}
+
+function parseCSVLine(line) {
+  var res=[],cur="",inQ=false;
+  for(var i=0;i<line.length;i++){var c=line[i];if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){res.push(cur);cur="";}else cur+=c;}
+  res.push(cur);return res;
+}
+
+function checkSetupReady() {
+  var urlOk  = document.getElementById("script-url").value.length > 20;
+  document.getElementById("generate-btn").disabled = !(urlOk && parsedCSVData !== null);
+}
+
+function generateForm() {
+  var url     = document.getElementById("script-url").value.trim();
+  var dataStr = JSON.stringify(parsedCSVData);
+  var btn     = document.getElementById("generate-btn");
+  btn.disabled = true; btn.textContent = "⏳ Generating...";
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", window.location.href, true);
+  xhr.onload = function() {
+    var html = xhr.status === 200 ? xhr.responseText : buildFallbackHTML(dataStr, url);
+    html = html.replace("var DISTRICTS_DATA = null;", "var DISTRICTS_DATA = " + dataStr + ";");
+    html = html.replace("var SCRIPT_URL     = null;", 'var SCRIPT_URL = "' + url + '";');
+    downloadHTML(html);
+    btn.disabled = false; btn.textContent = "✨ Generate & Download Form";
+    DISTRICTS_DATA = parsedCSVData; SCRIPT_URL = url; showFormScreen();
+  };
+  xhr.onerror = function() {
+    var html = buildFallbackHTML(dataStr, url);
+    downloadHTML(html);
+    btn.disabled = false; btn.textContent = "✨ Generate & Download Form";
+    DISTRICTS_DATA = parsedCSVData; SCRIPT_URL = url; showFormScreen();
+  };
+  xhr.send();
+}
+
+function buildFallbackHTML(dataStr, url) {
+  var scripts = document.querySelectorAll("script:not([src])");
+  var appScript = "";
+  scripts.forEach(function(s){ if(s.textContent.includes("DISTRICTS_DATA")) appScript = s.textContent; });
+  appScript = appScript.replace("var DISTRICTS_DATA = null;","var DISTRICTS_DATA = "+dataStr+";");
+  appScript = appScript.replace("var SCRIPT_URL     = null;",'var SCRIPT_URL = "'+url+'";');
+  var head = document.head.innerHTML.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,"");
+  var body = document.body.innerHTML.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,"");
+  return '<!DOCTYPE html>\n<html lang="id">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Registrasi Yubisayu</title>\n'+head+'\n</head>\n<body>\n'+body+'\n<script>\n'+appScript+'\n<\/script>\n</body>\n</html>';
+}
+
+function downloadHTML(html) {
+  var blob = new Blob([html],{type:"text/html;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "index.html";
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+}
+
+function skipSetup() { showFormScreen(); }
+
+// ═══════════════════════════════════════════════════════════
+// FORM LOGIC
+// ═══════════════════════════════════════════════════════════
+function showFormScreen() {
+  document.getElementById("setup-screen").style.display = "none";
+  document.getElementById("form-screen").style.display  = "flex";
+  initForm();
+}
+
+function initForm() {
+  var sel = document.getElementById("sel-provinsi");
+  sel.innerHTML = '<option value="">Pilih Provinsi</option>';
+  if (DISTRICTS_DATA) {
+    Object.keys(DISTRICTS_DATA).forEach(function(p) {
+      var opt = document.createElement("option");
+      opt.value = p; opt.textContent = p; sel.appendChild(opt);
+    });
+    setHint("provinsi", Object.keys(DISTRICTS_DATA).length + " provinsi tersedia");
+  }
+  updateProgress();
+}
+
+function onProvinsiChange(provinsi) {
+  resetSelect("kota","Pilih Kabupaten/Kota",true);
+  resetSelect("kecamatan","Pilih Kecamatan",true);
+  clearErr("kota"); clearErr("kecamatan");
+  if (!provinsi || !DISTRICTS_DATA || !DISTRICTS_DATA[provinsi]) {
+    setHint("kota","Pilih provinsi terlebih dahulu");
+    setHint("kecamatan","Pilih kabupaten/kota terlebih dahulu");
+    return;
+  }
+  var cities = Object.keys(DISTRICTS_DATA[provinsi]);
+  var sel = document.getElementById("sel-kota");
+  cities.forEach(function(c){ var o=document.createElement("option");o.value=c;o.textContent=c;sel.appendChild(o); });
+  sel.disabled = false;
+  setHint("kota", cities.length + " kabupaten/kota tersedia");
+  setHint("kecamatan","Pilih kabupaten/kota terlebih dahulu");
+}
+
+function onKotaChange(kota) {
+  resetSelect("kecamatan","Pilih Kecamatan",true);
+  clearErr("kecamatan");
+  var prov = document.getElementById("sel-provinsi").value;
+  if (!kota||!DISTRICTS_DATA||!DISTRICTS_DATA[prov]||!DISTRICTS_DATA[prov][kota]) {
+    setHint("kecamatan","Pilih kabupaten/kota terlebih dahulu"); return;
+  }
+  var districts = DISTRICTS_DATA[prov][kota];
+  var sel = document.getElementById("sel-kecamatan");
+  districts.forEach(function(d){ var o=document.createElement("option");o.value=d;o.textContent=d;sel.appendChild(o); });
+  sel.disabled = false;
+  setHint("kecamatan", districts.length + " kecamatan tersedia");
+}
+
+function selectEkspedisi(val, el) {
+  selectedEksp = val;
+  document.querySelectorAll(".radio-option").forEach(function(r){ r.classList.remove("selected"); });
+  el.classList.add("selected");
+  el.querySelector("input[type=radio]").checked = true;
+  clearErr("ekspedisi");
+}
+
+// ── Page navigation ──────────────────────────────────────
+function goToPage2() {
+  if (!validatePage1()) return;
+  document.getElementById("page-1").style.display = "none";
+  document.getElementById("page-2").style.display = "block";
+  currentPage = 2;
+  updatePageIndicator();
+  window.scrollTo(0,0);
+}
+
+function goToPage1() {
+  document.getElementById("page-2").style.display = "none";
+  document.getElementById("page-1").style.display = "block";
+  currentPage = 1;
+  updatePageIndicator();
+  window.scrollTo(0,0);
+}
+
+function updatePageIndicator() {
+  document.getElementById("dot-0").className = "page-dot" + (currentPage===1?" active":"");
+  document.getElementById("dot-1").className = "page-dot" + (currentPage===2?" active":"");
+  document.getElementById("page-label").textContent = "Halaman " + currentPage + " dari 2";
+  document.getElementById("progress-fill").style.width = (currentPage===1?"50%":"100%");
+}
+
+// ── Validation ───────────────────────────────────────────
+function validatePage1() {
+  var ok = true;
+  function check(fid, val) { if (!val) { document.getElementById(fid).classList.add("has-error"); ok=false; } else { document.getElementById(fid).classList.remove("has-error"); } }
+  check("f-instagram", document.getElementById("inp-instagram").value.trim());
+  check("f-namadepan",  document.getElementById("inp-namadepan").value.trim());
+  // Phone: must start with country code (no leading 0)
+  var ponsel = document.getElementById("inp-ponsel").value.trim();
+  if (!ponsel || ponsel.charAt(0) === "0") {
+    document.getElementById("f-ponsel").classList.add("has-error"); ok = false;
+  } else {
+    document.getElementById("f-ponsel").classList.remove("has-error");
+  }
+  return ok;
+}
+
+function validatePage2() {
+  var ok = true;
+  function check(fid, val) { if (!val) { document.getElementById(fid).classList.add("has-error"); ok=false; } else { document.getElementById(fid).classList.remove("has-error"); } }
+  check("f-alamat",    document.getElementById("inp-alamat").value.trim());
+  check("f-jalan",     document.getElementById("inp-jalan").value.trim());
+  check("f-provinsi",  document.getElementById("sel-provinsi").value);
+  check("f-kota",      document.getElementById("sel-kota").value);
+  check("f-kecamatan", document.getElementById("sel-kecamatan").value);
+  var kp = document.getElementById("inp-kodepos").value.trim();
+  if (!kp) { document.getElementById("f-kodepos").classList.add("has-error"); ok=false; }
+  else document.getElementById("f-kodepos").classList.remove("has-error");
+  check("f-ekspedisi", selectedEksp);
+  return ok;
+}
+
+// ── Submit ───────────────────────────────────────────────
+function submitForm() {
+  if (!validatePage2()) return;
+  var btn = document.getElementById("submit-btn");
+  btn.disabled = true; btn.textContent = "Mengirim...";
+
+  var payload = {
+    instagram:   document.getElementById("inp-instagram").value.trim(),
+    nama_depan:  document.getElementById("inp-namadepan").value.trim(),
+    nama_belakang: document.getElementById("inp-namabelakang").value.trim(),
+    email:       document.getElementById("inp-email").value.trim(),
+    ponsel:      document.getElementById("inp-ponsel").value.trim(),
+    alamat:      document.getElementById("inp-alamat").value.trim(),
+    jalan:       document.getElementById("inp-jalan").value.trim(),
+    provinsi:    document.getElementById("sel-provinsi").value,
+    kota:        document.getElementById("sel-kota").value,
+    kecamatan:   document.getElementById("sel-kecamatan").value,
+    kode_pos:    document.getElementById("inp-kodepos").value.trim(),
+    ekspedisi:   selectedEksp
+  };
+
+  if (!SCRIPT_URL) { showSuccess(payload); return; }
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(payload),
+    mode: "no-cors"
+  }).then(function(){ showSuccess(payload); })
+    .catch(function(){ showSuccess(payload); });
+}
+
+function showSuccess(data) {
+  document.getElementById("form-screen").style.display   = "none";
+  document.getElementById("success-screen").style.display = "flex";
+  var meta = [
+    ["User Instagram", data.instagram],
+    ["Nama", data.nama_depan + (data.nama_belakang?" "+data.nama_belakang:"")],
+    ["Nomor Ponsel", data.ponsel],
+    ["Provinsi", data.provinsi],
+    ["Kabupaten/Kota", data.kota],
+    ["Kecamatan", data.kecamatan],
+    ["Kode Pos", data.kode_pos],
+    ["Ekspedisi", data.ekspedisi]
+  ];
+  document.getElementById("success-meta").innerHTML = meta.map(function(r){
+    return '<div class="meta-row"><span class="meta-label">'+r[0]+'</span><span class="meta-value">'+r[1]+'</span></div>';
+  }).join("");
+}
+
+function resetToForm() {
+  document.getElementById("success-screen").style.display = "none";
+  document.getElementById("form-screen").style.display    = "flex";
+  // Reset page 1
+  ["inp-instagram","inp-namadepan","inp-namabelakang","inp-email","inp-ponsel"].forEach(function(id){ document.getElementById(id).value=""; });
+  // Reset page 2
+  document.getElementById("inp-alamat").value = "";
+  document.getElementById("inp-jalan").value  = "";
+  document.getElementById("inp-kodepos").value = "";
+  resetSelect("provinsi","Pilih Provinsi",false);
+  resetSelect("kota","Pilih Kabupaten/Kota",true);
+  resetSelect("kecamatan","Pilih Kecamatan",true);
+  selectedEksp = "";
+  document.querySelectorAll(".radio-option").forEach(function(r){ r.classList.remove("selected"); r.querySelector("input").checked=false; });
+  goToPage1();
+  var btn = document.getElementById("submit-btn");
+  btn.disabled=false; btn.textContent="Kirim";
+  initForm();
+}
+
+// ── Helpers ──────────────────────────────────────────────
+function updateProgress() {
+  var p1 = [
+    document.getElementById("inp-instagram").value.trim(),
+    document.getElementById("inp-namadepan").value.trim(),
+    document.getElementById("inp-ponsel").value.trim()
+  ];
+  var filled = p1.filter(function(v){return !!v;}).length;
+  if (currentPage === 1) {
+    document.getElementById("progress-fill").style.width = Math.round(filled/3*50)+"%";
+  }
+}
+
+function resetSelect(name, placeholder, disable) {
+  var sel = document.getElementById("sel-"+name);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">'+placeholder+'</option>';
+  sel.disabled = !!disable;
+}
+
+function setHint(name, msg, loading) {
+  var el = document.getElementById("hint-"+name);
+  if (!el) return;
+  if (loading) el.innerHTML = '<div class="spinner"></div>'+msg;
+  else         el.textContent = msg;
+  el.className = "field-hint" + (loading?" loading":"");
+}
+
+function clearErr(name) {
+  var el = document.getElementById("f-"+name);
+  if (el) el.classList.remove("has-error");
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+function initApp() {
+  if (DISTRICTS_DATA && SCRIPT_URL) {
+    showFormScreen();
+  } else {
+    document.getElementById("setup-screen").style.display = "flex";
+  }
+}
+initApp();
+
+</script>
+</body>
+</html>
