@@ -182,18 +182,14 @@ body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(
   <!-- PAGE 2 -->
   <div id="page-2" class="card" style="display:none">
     <div class="section-header">Alamat Pengiriman</div>
+    <div style="padding: 12px 28px 0; font-size: 13px; color: var(--gray-500); line-height: 1.6;">
+      Alamat lengkap, termasuk nama komplek (jika ada), nama jalan, blok, serta nomor rumah.
+    </div>
     <div class="form-body">
 
       <div class="field" id="f-alamat">
-        <div class="field-label">Alamat Pengiriman <span class="required">*</span></div>
-        <div class="field-desc">Alamat lengkap, termasuk nama komplek (jika ada), nama jalan, blok, serta nomor rumah.</div>
+        <div class="field-label">Jalan<span class="required">*</span></div>
         <textarea id="inp-alamat" placeholder="Contoh: Jl. Merdeka No. 10, Komplek Permata Blok A3"></textarea>
-        <div class="field-error">Alamat wajib diisi.</div>
-      </div>
-
-      <div class="field" id="f-jalan">
-        <div class="field-label">Jalan <span class="required">*</span></div>
-        <input type="text" id="inp-jalan" class="input-field" placeholder="Nama jalan">
         <div class="field-error">Jalan wajib diisi.</div>
       </div>
 
@@ -371,7 +367,6 @@ function validatePage2() {
   var ok = true;
   function check(fid, val) { if (!val) { document.getElementById(fid).classList.add("has-error"); ok=false; } else { document.getElementById(fid).classList.remove("has-error"); } }
   check("f-alamat",    document.getElementById("inp-alamat").value.trim());
-  check("f-jalan",     document.getElementById("inp-jalan").value.trim());
   check("f-provinsi",  document.getElementById("sel-provinsi").value);
   check("f-kota",      document.getElementById("sel-kota").value);
   check("f-kecamatan", document.getElementById("sel-kecamatan").value);
@@ -393,8 +388,7 @@ function submitForm() {
     nama_belakang: document.getElementById("inp-namabelakang").value.trim(),
     email:         document.getElementById("inp-email").value.trim(),
     ponsel:        document.getElementById("inp-ponsel").value.trim(),
-    alamat:        document.getElementById("inp-alamat").value.trim(),
-    jalan:         document.getElementById("inp-jalan").value.trim(),
+    jalan:         document.getElementById("inp-alamat").value.trim(),
     provinsi:      document.getElementById("sel-provinsi").value,
     kota:          document.getElementById("sel-kota").value,
     kecamatan:     document.getElementById("sel-kecamatan").value,
@@ -417,6 +411,7 @@ function showSuccess(data) {
     ["User Instagram", data.instagram],
     ["Nama",           data.nama_depan + (data.nama_belakang?" "+data.nama_belakang:"")],
     ["Nomor Ponsel",   data.ponsel],
+    ["Jalan",          data.jalan],
     ["Provinsi",       data.provinsi],
     ["Kabupaten/Kota", data.kota],
     ["Kecamatan",      data.kecamatan],
@@ -433,7 +428,6 @@ function resetToForm() {
   document.getElementById("form-screen").style.display    = "flex";
   ["inp-instagram","inp-namadepan","inp-namabelakang","inp-email","inp-ponsel"].forEach(function(id) { document.getElementById(id).value=""; });
   document.getElementById("inp-alamat").value  = "";
-  document.getElementById("inp-jalan").value   = "";
   document.getElementById("inp-kodepos").value = "";
   resetSelect("provinsi","Pilih Provinsi",false);
   resetSelect("kota","Pilih Kabupaten/Kota",true);
