@@ -243,6 +243,10 @@ body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(
         <div class="field-error">Preferensi ekspedisi wajib dipilih.</div>
       </div>
 
+      <!-- Bot protection. Stays empty until TURNSTILE_SITE_KEY is set in the
+           script below, at which point the Cloudflare widget is injected here. -->
+      <div id="turnstile-container" style="margin-top:4px"></div>
+
     </div>
     <div class="divider"></div>
     <div class="form-footer">
@@ -273,6 +277,10 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzE7Azfi3oHuWYHK2lwUP1
 // Supabase via the dashboard's public endpoint (trusted-gateway). During the
 // transition we dual-write: this endpoint AND the legacy Google Apps Script.
 var REGISTER_URL = "https://yubisayu-dashboard.netlify.app/api/public/register";
+// Bot protection: paste your Cloudflare Turnstile SITE key here to enable the
+// widget. While empty, no widget/script loads and the backend skips the check
+// (set TURNSTILE_SECRET_KEY on the dashboard to enforce once a key is set).
+var TURNSTILE_SITE_KEY = "";
 
 // ── State ────────────────────────────────────────────────
 var currentPage  = 1;
@@ -287,7 +295,20 @@ var selectedEksp = "";
   });
   setHint("provinsi", Object.keys(DISTRICTS_DATA).length + " provinsi tersedia");
   updateProgress();
+  initTurnstile();
 })();
+
+// Inject the Cloudflare Turnstile widget only when a site key is configured.
+function initTurnstile() {
+  if (!TURNSTILE_SITE_KEY) return;
+  var c = document.getElementById("turnstile-container");
+  c.className = "cf-turnstile";
+  c.setAttribute("data-sitekey", TURNSTILE_SITE_KEY);
+  var s = document.createElement("script");
+  s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+}
 
 // ── Cascading dropdowns ───────────────────────────────────
 function onProvinsiChange(provinsi) {
@@ -396,14 +417,16 @@ function submitForm() {
     kota:          document.getElementById("sel-kota").value,
     kecamatan:     document.getElementById("sel-kecamatan").value,
     kode_pos:      document.getElementById("inp-kodepos").value.trim(),
-    ekspedisi:     selectedEksp
+    ekspedisi:     selectedEksp,
+    turnstile_token: (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ""
   };
   // New: Supabase via dashboard (real CORS so failures can be logged for verification).
   fetch(REGISTER_URL, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify(payload)
-  }).catch(function(e) { console.error("register endpoint failed", e); });
+  }).then(function(r) { if (!r.ok) console.warn("register endpoint status", r.status); })
+    .catch(function(e) { console.error("register endpoint failed", e); });
   // Legacy: keep writing to Google Sheets during the transition (fire-and-forget).
   fetch(SCRIPT_URL, {
     method: "POST",
