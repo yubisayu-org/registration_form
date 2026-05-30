@@ -249,6 +249,7 @@ body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(
 
     </div>
     <div class="divider"></div>
+    <div id="submit-error" style="display:none; padding:14px 28px 0; font-size:12px; color:var(--red); text-align:center; line-height:1.5;"></div>
     <div class="form-footer">
       <button class="btn btn-nav outline" onclick="goToPage1()">&#x2190; Kembali</button>
       <button class="btn btn-nav" id="submit-btn" onclick="submitForm()">Kirim</button>
@@ -376,10 +377,24 @@ function updatePageIndicator() {
 }
 
 // ── Validation ────────────────────────────────────────────
+// Mirror of the server-side rule in app/api/public/register/route.ts. Keep in sync.
+var INSTAGRAM_RE = /^@?[a-zA-Z0-9._]{1,30}$/;
+
 function validatePage1() {
   var ok = true;
   function check(fid, val) { if (!val) { document.getElementById(fid).classList.add("has-error"); ok=false; } else { document.getElementById(fid).classList.remove("has-error"); } }
-  check("f-instagram", document.getElementById("inp-instagram").value.trim());
+  var ig = document.getElementById("inp-instagram").value.trim();
+  var igField = document.getElementById("f-instagram");
+  var igErr = igField.querySelector(".field-error");
+  if (!ig) {
+    igErr.textContent = "User Instagram wajib diisi.";
+    igField.classList.add("has-error"); ok = false;
+  } else if (!INSTAGRAM_RE.test(ig)) {
+    igErr.textContent = "Username Instagram tidak valid. Hanya boleh huruf, angka, titik (.), dan garis bawah (_) — tanpa spasi.";
+    igField.classList.add("has-error"); ok = false;
+  } else {
+    igField.classList.remove("has-error");
+  }
   check("f-namadepan",  document.getElementById("inp-namadepan").value.trim());
   var ponsel = document.getElementById("inp-ponsel").value.trim();
   if (!ponsel || ponsel.charAt(0) === "0") { document.getElementById("f-ponsel").classList.add("has-error"); ok=false; }
@@ -405,6 +420,8 @@ function validatePage2() {
 function submitForm() {
   if (!validatePage2()) return;
   var btn = document.getElementById("submit-btn");
+  var errEl = document.getElementById("submit-error");
+  errEl.style.display = "none"; errEl.textContent = "";
   btn.disabled = true; btn.textContent = "Mengirim...";
   var payload = {
     instagram:     document.getElementById("inp-instagram").value.trim(),
@@ -420,21 +437,35 @@ function submitForm() {
     ekspedisi:     selectedEksp,
     turnstile_token: (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ""
   };
-  // New: Supabase via dashboard (real CORS so failures can be logged for verification).
-  fetch(REGISTER_URL, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(payload)
-  }).then(function(r) { if (!r.ok) console.warn("register endpoint status", r.status); })
-    .catch(function(e) { console.error("register endpoint failed", e); });
-  // Legacy: keep writing to Google Sheets during the transition (fire-and-forget).
+  // Legacy Google Sheets write — fire-and-forget during the transition; does not
+  // drive UI anymore. Supabase response is the source of truth for success/error.
   fetch(SCRIPT_URL, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify(payload),
     mode: "no-cors"
-  }).then(function() { showSuccess(payload); })
-    .catch(function() { showSuccess(payload); });
+  });
+  function showError(msg) {
+    errEl.textContent = msg;
+    errEl.style.display = "block";
+    btn.disabled = false; btn.textContent = "Kirim";
+  }
+  fetch(REGISTER_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(payload)
+  }).then(function(r) {
+    if (r.ok) { showSuccess(payload); return; }
+    return r.text().then(function(t) {
+      var msg = "Registrasi gagal (status " + r.status + "). Silakan periksa data dan coba lagi.";
+      try { var j = JSON.parse(t); if (j && j.error) msg = "Registrasi gagal: " + j.error; } catch(e) {}
+      console.warn("register endpoint status", r.status, t);
+      showError(msg);
+    });
+  }).catch(function(e) {
+    console.error("register endpoint failed", e);
+    showError("Tidak dapat terhubung ke server. Periksa koneksi internet dan coba lagi.");
+  });
 }
 
 function showSuccess(data) {
