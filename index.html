@@ -228,8 +228,14 @@ body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(
 
       <div class="field" id="f-kodepos">
         <div class="field-label">Kode Pos <span class="required">*</span></div>
-        <input type="text" inputmode="numeric" pattern="[0-9]*" id="inp-kodepos" class="input-field" placeholder="Kode pos" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="inp-kodepos" class="input-field" placeholder="Kode pos" oninput="this.value=this.value.replace(/[^0-9]/g,''); onKodePosInput()">
         <div class="field-error">Kode Pos wajib diisi.</div>
+        <!-- Filled from the courier's own area list for the chosen kecamatan.
+             Biteship returns one area per postal code in a district, so this is
+             also the only authoritative list of that district's postal codes --
+             which is what lets a mistyped one be corrected here rather than
+             arriving on a shipping label pointing at the wrong part of town. -->
+        <div id="area-box" style="display:none;margin-top:8px"></div>
       </div>
 
       <div class="field" id="f-ekspedisi">
@@ -278,6 +284,10 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzE7Azfi3oHuWYHK2lwUP1
 // Supabase via the dashboard's public endpoint (trusted-gateway). During the
 // transition we dual-write: this endpoint AND the legacy Google Apps Script.
 var REGISTER_URL = "https://yubisayu.up.railway.app/api/public/register";
+// Looks up the courier's areas for a kecamatan. A LOOKUP, not a search: the
+// endpoint only answers for a kabupaten+kecamatan pair that exists in the same
+// fixed list these dropdowns are built from.
+var AREAS_URL = "https://yubisayu.up.railway.app/api/public/biteship/areas";
 // Bot protection: paste your Cloudflare Turnstile SITE key here to enable the
 // widget. While empty, no widget/script loads and the backend skips the check
 // (set TURNSTILE_SECRET_KEY on the dashboard to enforce once a key is set).
@@ -346,6 +356,12 @@ function onKotaChange(kota) {
   sel.disabled = false;
   setHint("kecamatan", districts.length + " kecamatan tersedia");
 }
+
+// Changing the district invalidates whatever area was found for the old one.
+document.addEventListener("DOMContentLoaded", function () {
+  var sel = document.getElementById("sel-kecamatan");
+  if (sel) sel.addEventListener("change", function () { clearArea(); lookupArea(); });
+});
 
 function selectEkspedisi(val, el) {
   selectedEksp = val;
@@ -416,6 +432,104 @@ function validatePage2() {
   return ok;
 }
 
+// ── Courier area ──────────────────────────────────────────
+// The customer never types this. She has already told us her kecamatan (from a
+// fixed list) and her postal code; those two identify the courier's area for
+// her address. Saving it means she arrives mapped, and -- because a customer
+// re-registers precisely when she MOVES -- it means a move replaces the old
+// area instead of quietly keeping it.
+//
+// The one thing she may be asked: if her postal code is not one of the
+// district's, we show the real ones so she can fix it here, in the two seconds
+// she is already on this screen.
+var areaChosen = null;      // {id, name} once known
+var areaSeq    = 0;         // guards against a slow reply overwriting a newer one
+
+function areaBox() { return document.getElementById("area-box"); }
+
+function clearArea() {
+  areaChosen = null;
+  var b = areaBox();
+  b.style.display = "none";
+  b.innerHTML = "";
+}
+
+function esc(t) {
+  return String(t).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+function showAreaConfirmed(area) {
+  areaChosen = area;
+  var b = areaBox();
+  b.style.display = "block";
+  b.innerHTML =
+    '<div style="font-size:13px;color:#2e5e4e;line-height:1.5">' +
+    "\u2713 Area kurir: " + esc(area.name) + "</div>";
+}
+
+function showAreaChoices(areas, typed) {
+  var b = areaBox();
+  b.style.display = "block";
+  var opts = areas.map(function (a, i) {
+    return (
+      '<label style="display:inline-block;margin:2px 10px 2px 0;font-size:13px;cursor:pointer">' +
+      '<input type="radio" name="area-pick" value="' + i + '" ' +
+      'onchange="pickArea(' + i + ')" style="margin-right:4px">' +
+      esc(a.postal || a.name) + "</label>"
+    );
+  }).join("");
+  window.__areaOptions = areas;
+  b.innerHTML =
+    '<div style="font-size:13px;color:#a94e2b;line-height:1.5;margin-bottom:4px">' +
+    "Kode pos " + esc(typed) + " tidak ada di kecamatan ini. Pilih kode pos Anda:" +
+    "</div><div>" + opts + "</div>";
+}
+
+function pickArea(i) {
+  var a = (window.__areaOptions || [])[i];
+  if (!a) return;
+  // Her postal code is corrected to the one she picked: it is what the courier
+  // recognises, and it is what the shipping label will print.
+  if (a.postal) document.getElementById("inp-kodepos").value = a.postal;
+  showAreaConfirmed(a);
+}
+
+function lookupArea() {
+  var kota      = document.getElementById("sel-kota").value;
+  var kecamatan = document.getElementById("sel-kecamatan").value;
+  var kodePos   = document.getElementById("inp-kodepos").value.trim();
+  if (!kota || !kecamatan || kodePos.length !== 5) { clearArea(); return; }
+
+  var seq = ++areaSeq;
+  clearArea();
+  fetch(AREAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kota: kota, kecamatan: kecamatan, kode_pos: kodePos })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (seq !== areaSeq) return;             // a newer lookup has started
+      if (d.match === "exact" && d.area) { showAreaConfirmed(d.area); }
+      else if (d.match === "choose" && d.areas && d.areas.length) {
+        showAreaChoices(d.areas, kodePos);
+      }
+      // "none": Biteship has no area for this district. Say nothing and let her
+      // submit -- registration must never depend on a courier API being up.
+    })
+    .catch(function () { /* offline or blocked: submit without an area */ });
+}
+
+var areaTimer = null;
+function onKodePosInput() {
+  clearArea();
+  if (areaTimer) clearTimeout(areaTimer);
+  // Every call is billed, so wait for her to stop typing.
+  areaTimer = setTimeout(lookupArea, 600);
+}
+
 // ── Submit ────────────────────────────────────────────────
 function submitForm() {
   if (!validatePage2()) return;
@@ -435,6 +549,8 @@ function submitForm() {
     kecamatan:     document.getElementById("sel-kecamatan").value,
     kode_pos:      document.getElementById("inp-kodepos").value.trim(),
     ekspedisi:     selectedEksp,
+    biteship_area_id:   areaChosen ? areaChosen.id   : "",
+    biteship_area_name: areaChosen ? areaChosen.name : "",
     turnstile_token: (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ""
   };
   // Legacy Google Sheets write — fire-and-forget during the transition; does not
